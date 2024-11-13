@@ -1,11 +1,11 @@
 [package]
-name = "chia_puzzles"
+name = "chia-puzzles"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies]
-hex = "0.4"
-hex-literal = "0.4.1"
+[workspace]
+resolver = "2"
+members = ["proc-macro"]
 
-[build-dependencies]
-hex = "0.4"  
+[dependencies]
+chia-puzzles-macro = { version = "0.1.0", path = "./proc-macro" }

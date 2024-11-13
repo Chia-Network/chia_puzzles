@@ -1,4 +1,3 @@
-mod loaded_chialisp;
-mod tests;
+use chia_puzzles_macro::include_puzzles;
 
-pub use loaded_chialisp::*;
+include_puzzles!("puzzles");
