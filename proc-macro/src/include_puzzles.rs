@@ -73,7 +73,7 @@ pub fn include_puzzles(input: TokenStream) -> Result<TokenStream, Error> {
 
             # Source
             ```lisp
-            \n{source}\n
+            {source}
             ```
             "
         );
