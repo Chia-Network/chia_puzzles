@@ -64,7 +64,6 @@ pub(crate) mod test {
     enum TreeOp {
         SExp(NodePtr),
         Cons,
-        ConsAddCache(NodePtr),
     }
 
     fn tree_hash_atom(bytes: &[u8]) -> TreeHash {
@@ -103,7 +102,6 @@ pub(crate) mod test {
                     let rest = hashes.pop().unwrap();
                     hashes.push(tree_hash_pair(first, rest));
                 }
-                TreeOp::ConsAddCache(_) => unreachable!(),
             }
         }
 
