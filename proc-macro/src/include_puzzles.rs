@@ -1,9 +1,9 @@
-use std::{fs, path::PathBuf};
+use std::{collections::HashMap, fs, io, path::PathBuf};
 
-use convert_case::{Case, Casing};
-use proc_macro2::TokenStream;
+use indoc::formatdoc;
+use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::{parse2, LitStr};
+use syn::{parse2, Ident, LitStr};
 use thiserror::Error;
 
 struct Puzzle {
@@ -17,6 +17,12 @@ pub enum Error {
     #[error("parse error: {0}")]
     Parse(#[from] syn::Error),
 
+    #[error("json error: {0}")]
+    Json(#[from] serde_json::Error),
+
+    #[error("io error: {0}")]
+    Io(#[from] io::Error),
+
     #[error("missing directory: {0}")]
     MissingDir(String),
 
@@ -25,6 +31,9 @@ pub enum Error {
 
     #[error("missing hex file: {0}")]
     MissingHex(String),
+
+    #[error("missing puzzle hash for {0}")]
+    MissingPuzzleHash(String),
 
     #[error("invalid entry: {0}")]
     InvalidEntry(String),
@@ -35,26 +44,98 @@ pub enum Error {
 
 pub fn include_puzzles(input: TokenStream) -> Result<TokenStream, Error> {
     let puzzles_dir: LitStr = parse2(input)?;
+    let puzzles_dir: PathBuf = puzzles_dir.value().into();
+
+    let puzzle_hashes_path = puzzles_dir.parent().unwrap().join("puzzle_hashes.json");
+    let puzzle_hashes: HashMap<String, String> =
+        serde_json::from_str(&fs::read_to_string(puzzle_hashes_path)?)?;
 
     let mut puzzles = Vec::new();
-    crawl_dir(puzzles_dir.value().into(), &mut puzzles)?;
+    crawl_dir(puzzles_dir, &mut puzzles)?;
 
     let mut items = Vec::new();
 
-    for Puzzle { name, source, hex } in puzzles {
+    for Puzzle { name, source, hex } in &puzzles {
+        let snake_name = name.to_lowercase();
+        let length = hex.len() / 2;
+
+        let puzzle_hash = puzzle_hashes
+            .get(&snake_name)
+            .ok_or(Error::MissingPuzzleHash(snake_name.clone()))?;
+
+        let hex_ident = Ident::new(name, Span::call_site());
+        let puzzle_hash_ident = Ident::new(&format!("{}_PUZZLE_HASH", name), Span::call_site());
+
+        let hex_doc = formatdoc!(
+            "
+            The hex representation of the compiled `{snake_name}` puzzle.
+            You can also use [`{puzzle_hash_ident}`] to refer to the corresponding puzzle hash.
+
+            # Source
+            ```lisp
+            \n{source}\n
+            ```
+            "
+        );
+
         items.push(quote! {
-            /// #source
-            pub const #name: &str = #hex;
+            #[doc=#hex_doc]
+            pub const #hex_ident: [u8; #length] = hex!(#hex);
+        });
+
+        let puzzle_hash_doc = formatdoc!(
+            "
+            The puzzle hash of the `{snake_name}` puzzle.
+            You can also use [`{hex_ident}`] to refer to the full compiled puzzle reveal.
+            "
+        );
+
+        items.push(quote! {
+            #[doc=#puzzle_hash_doc]
+            pub const #puzzle_hash_ident: TreeHash = TreeHash::new(hex!(#puzzle_hash));
         });
     }
 
-    Ok(quote! {})
+    let mut tests = Vec::new();
+
+    for Puzzle { name, .. } in puzzles {
+        let test_name = Ident::new(&format!("test_{}", name.to_lowercase()), Span::call_site());
+        let puzzle_hash_name = Ident::new(&format!("{}_PUZZLE_HASH", name), Span::call_site());
+        let name = Ident::new(&name, Span::call_site());
+
+        tests.push(quote! {
+            #[test]
+            fn #test_name() -> anyhow::Result<()> {
+                let mut allocator = Allocator::new();
+
+                let ptr = node_from_bytes(&mut allocator, &#name)?;
+                let result = crate::test::tree_hash(&allocator, ptr);
+
+                assert_eq!(result, #puzzle_hash_name);
+
+                Ok(())
+            }
+        });
+    }
+
+    Ok(quote! {
+        #( #items )*
+
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+
+            use clvmr::{Allocator, serde::node_from_bytes};
+
+            #( #tests )*
+        }
+    })
 }
 
 fn crawl_dir(path: PathBuf, puzzles: &mut Vec<Puzzle>) -> Result<(), Error> {
     let path_string = path.to_str().expect("invalid path").to_string();
 
-    for entry in fs::read_dir(path).map_err(|_| Error::MissingDir(path_string.clone()))? {
+    for entry in fs::read_dir(&path).map_err(|_| Error::MissingDir(path_string.clone()))? {
         let entry = entry.map_err(|_| Error::InvalidEntry(path_string.clone()))?;
         let file_type = entry
             .file_type()
@@ -79,7 +160,8 @@ fn crawl_dir(path: PathBuf, puzzles: &mut Vec<Puzzle>) -> Result<(), Error> {
             continue;
         };
 
-        let source_path = format!("{name}.clsp");
+        let source_path = path.join(format!("{name}.clsp"));
+        let source_path = source_path.to_str().expect("invalid path").to_string();
         let source =
             fs::read_to_string(&source_path).map_err(|_| Error::MissingSource(source_path))?;
 
@@ -87,7 +169,7 @@ fn crawl_dir(path: PathBuf, puzzles: &mut Vec<Puzzle>) -> Result<(), Error> {
         let hex = fs::read_to_string(&hex_path).map_err(|_| Error::MissingHex(hex_path))?;
 
         puzzles.push(Puzzle {
-            name: name.to_case(Case::ScreamingSnake),
+            name: name.to_uppercase(),
             source: source.trim().to_string(),
             hex: hex.trim().to_string(),
         })

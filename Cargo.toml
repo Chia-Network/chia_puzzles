@@ -9,3 +9,9 @@ members = ["proc-macro"]
 
 [dependencies]
 chia-puzzles-macro = { version = "0.1.0", path = "./proc-macro" }
+hex = "0.4.3"
+hex-literal = "0.4.1"
+
+[dev-dependencies]
+anyhow = "1.0.93"
+clvmr = "0.10.0"
