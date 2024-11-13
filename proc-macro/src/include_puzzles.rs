@@ -64,7 +64,7 @@ pub fn include_puzzles(input: TokenStream) -> Result<TokenStream, Error> {
             .ok_or(Error::MissingPuzzleHash(snake_name.clone()))?;
 
         let hex_ident = Ident::new(name, Span::call_site());
-        let puzzle_hash_ident = Ident::new(&format!("{}_PUZZLE_HASH", name), Span::call_site());
+        let puzzle_hash_ident = Ident::new(&format!("{}_HASH", name), Span::call_site());
 
         let hex_doc = formatdoc!(
             "
@@ -100,7 +100,7 @@ pub fn include_puzzles(input: TokenStream) -> Result<TokenStream, Error> {
 
     for Puzzle { name, .. } in puzzles {
         let test_name = Ident::new(&format!("test_{}", name.to_lowercase()), Span::call_site());
-        let puzzle_hash_name = Ident::new(&format!("{}_PUZZLE_HASH", name), Span::call_site());
+        let puzzle_hash_name = Ident::new(&format!("{}_HASH", name), Span::call_site());
         let name = Ident::new(&name, Span::call_site());
 
         tests.push(quote! {
