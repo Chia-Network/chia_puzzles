@@ -25,8 +25,8 @@ clsp_suffix = ".clsp"
 hex_suffix = ".clsp.hex"
 all_suffixes = {"clsp": clsp_suffix, "hex": hex_suffix, "clvm": clvm_suffix}
 top_levels = {"chia"}
-hashes_path = root.joinpath("chia-puzzles/deployed_puzzle_hashes.json")
-std_libraries = root.joinpath("chia-puzzles/puzzles")
+hashes_path = root.joinpath("../puzzle_hashes.json")
+std_libraries = root.joinpath("../puzzles")
 
 ValueType = typing.Union[bytes, CLVMStorage]
 ValueStackType = typing.List[ValueType]
