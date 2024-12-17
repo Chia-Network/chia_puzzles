@@ -2,17 +2,17 @@
 
 [[package]]
 name = "clvm-rs"
-version = "0.10.0"
+version = "0.2.7"
 description = "Implementation of `clvm` for Chia Network's cryptocurrency"
 optional = false
 python-versions = "*"
 files = [
-    {file = "clvm_rs-0.10.0-cp38-abi3-macosx_13_0_arm64.whl", hash = "sha256:764429d74008433b94fd2f56759bf5fe3213391677502f5a9f2fc1d5ea11a004"},
-    {file = "clvm_rs-0.10.0-cp38-abi3-macosx_13_0_x86_64.whl", hash = "sha256:1fc17bbf71e4196d705b8087d04f97b07ecd0c10f09d7c32f632ce83bb823443"},
-    {file = "clvm_rs-0.10.0-cp38-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:3db2c29f83b89c74616b18c4b7ee1e3e193d81e103fe71cd48fda5ecdd30f94e"},
-    {file = "clvm_rs-0.10.0-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:cc99058ba32c1e7d4cf9e7de390b58ac8593c934988b8a2ef50dbb9ee6491fe3"},
-    {file = "clvm_rs-0.10.0-cp38-abi3-win_amd64.whl", hash = "sha256:c2155dbacff8e5796468d85f1076c53762c272d33105adf163cb37045c4032bc"},
-    {file = "clvm_rs-0.10.0.tar.gz", hash = "sha256:2b1cc6fc5c1b559970b8ea898049b0f34176a8cbb1bf6b52a8d7d2d2ee8abb5e"},
+    {file = "clvm_rs-0.2.7-cp37-abi3-macosx_10_14_x86_64.whl", hash = "sha256:92394dd68bdcbfd4710081415834807fa0ac0216391d645288f74fd30be8141f"},
+    {file = "clvm_rs-0.2.7-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:c99fb09fd185493837e552156d50c02dfa1aa44ee0be789d7c74c962741de2a4"},
+    {file = "clvm_rs-0.2.7-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:bceb3dbf59fac0e454bc18df80f7785f8fe7c6c74e6c2c25015d68c1dde005ec"},
+    {file = "clvm_rs-0.2.7-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:eeea1ad07399047d411e1d658ccbea3cf8aac77a38fa31ac06793cdfb0d63342"},
+    {file = "clvm_rs-0.2.7-cp37-abi3-win_amd64.whl", hash = "sha256:f38cc7840f28e390028ba05aa7cecd875b4154c5959ba982b7c22be12b073b88"},
+    {file = "clvm_rs-0.2.7.tar.gz", hash = "sha256:8971eca31bcd7f70d74d0a899ac88383b7409f45bd50b24cb3aa5318e7bfc678"},
 ]
 
 [[package]]
@@ -170,4 +170,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "b1ad26b5920319d774af7740ff079d31783cf42ac55a34b911d8df353833a120"
+content-hash = "5050c71a3034d4768b53da775245f6f9d37973cf9c65f70c276dd2317339a87e"
