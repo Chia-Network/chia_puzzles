@@ -6,3 +6,4 @@ uv.lock
 venv
 .venv
 tempfile.clsp.hex
+/dist/
