@@ -1,6 +1,6 @@
 [package]
 name = "chia_puzzles"
-version = "0.1.0"
+version = "0.18.0"
 edition = "2021"
 
 [dependencies]
@@ -8,4 +8,4 @@ hex = "0.4"
 hex-literal = "0.4.1"
 
 [build-dependencies]
-hex = "0.4"  
+hex = "0.4"

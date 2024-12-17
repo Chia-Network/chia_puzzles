@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "chia_puzzles"
-version = "0.1.0"
+version = "0.18.0"
 dependencies = [
  "hex",
  "hex-literal",
