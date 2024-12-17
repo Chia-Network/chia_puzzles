@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "chia_puzzles_py"
-version = "0.18.1"
+version = "0.18.2"
 authors = ["Matt Howard <matt@chia.net>"]
 description = "A collection of the currently deployed ChiaLisp puzzles."
 readme = "README.md"
