@@ -3764,6 +3764,43 @@ pub const P2_DELEGATED_PUZZLE_HASH: [u8; 32] =
     hex!("542cde70d1102cd1b763220990873efc8ab15625ded7eae22cc11e21ef2e2f7c");
 
 /// ```text
+/// ; This puzzle is used to delegate a spend to a singleton.
+/// ; The singleton will authorize the spend by sending a message via the SEND_MESSAGE condition.
+/// (mod (
+///     SINGLETON_MOD_HASH
+///     SINGLETON_STRUCT_HASH ; The hash of (SINGLETON_MOD_HASH . (LAUNCHER_ID . SINGLETON_LAUNCHER_HASH))
+///     NONCE
+///     singleton_inner_puzzle_hash
+///     delegated_puzzle
+///     delegated_solution
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry.clib)
+///   (include sha256tree.clib)
+///
+///   (defun-inline calculate_full_puzzle_hash (SINGLETON_MOD_HASH SINGLETON_STRUCT_HASH inner_puzzle_hash)
+///     (curry_hashes_inline SINGLETON_MOD_HASH
+///       SINGLETON_STRUCT_HASH
+///       inner_puzzle_hash
+///     )
+///   )
+///
+///   (c
+///     (list RECEIVE_MESSAGE
+///       23 ; = 010 111, mask for puzzle hash to coin ID
+///       (sha256tree delegated_puzzle)
+///       (calculate_full_puzzle_hash SINGLETON_MOD_HASH SINGLETON_STRUCT_HASH singleton_inner_puzzle_hash)
+///     )
+///     (a delegated_puzzle delegated_solution)
+///   )
+/// )
+/// ```
+pub const P2_DELEGATED_SINGLETON_MESSAGE: [u8; 382] = hex!("ff02ffff01ff04ffff04ff08ffff04ffff0117ffff04ffff02ff0effff04ff02ffff04ff5fff80808080ffff04ffff0bff2affff0bff0cffff0bff0cff32ff0580ffff0bff0cffff0bff3affff0bff0cffff0bff0cff32ff0b80ffff0bff0cffff0bff3affff0bff0cffff0bff0cff32ff2f80ffff0bff0cff32ff22808080ff22808080ff22808080ff8080808080ffff02ff5fff81bf8080ffff04ffff01ffff4302ffffffa04bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459aa09dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2ffa102a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222a102a8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff0effff04ff02ffff04ff09ff80808080ffff02ff0effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const P2_DELEGATED_SINGLETON_MESSAGE_HASH: [u8; 32] =
+    hex!("25fbd0d4586ff8266eb8b0fc4768b7714394d87f87824b0124fc10806ba87bb5");
+
+/// ```text
 /// ; build an M of N multisig puzzle
 /// ; coins are locked by N public keys, any M of which can delegate a sub-puzzle
 ///
@@ -4530,6 +4567,956 @@ pub const SINGLETON_TOP_LAYER_V1_1_HASH: [u8; 32] =
 pub const SINGLETON_TOP_LAYER: [u8; 1168] = hex!("ff02ffff01ff02ffff03ffff18ff2fffff010180ffff01ff02ff36ffff04ff02ffff04ff05ffff04ff17ffff04ffff02ff26ffff04ff02ffff04ff0bff80808080ffff04ff2fffff04ff0bffff04ff5fff808080808080808080ffff01ff088080ff0180ffff04ffff01ffffffff4602ff3304ffff0101ff02ffff02ffff03ff05ffff01ff02ff5cffff04ff02ffff04ff0dffff04ffff0bff2cffff0bff24ff3880ffff0bff2cffff0bff2cffff0bff24ff3480ff0980ffff0bff2cff0bffff0bff24ff8080808080ff8080808080ffff010b80ff0180ff02ffff03ff0bffff01ff02ff32ffff04ff02ffff04ff05ffff04ff0bffff04ff17ffff04ffff02ff2affff04ff02ffff04ffff02ffff03ffff09ff23ff2880ffff0181b3ff8080ff0180ff80808080ff80808080808080ffff01ff02ffff03ff17ff80ffff01ff088080ff018080ff0180ffffffff0bffff0bff17ffff02ff3affff04ff02ffff04ff09ffff04ff2fffff04ffff02ff26ffff04ff02ffff04ff05ff80808080ff808080808080ff5f80ff0bff81bf80ff02ffff03ffff20ffff22ff4fff178080ffff01ff02ff7effff04ff02ffff04ff6fffff04ffff04ffff02ffff03ff4fffff01ff04ff23ffff04ffff02ff3affff04ff02ffff04ff09ffff04ff53ffff04ffff02ff26ffff04ff02ffff04ff05ff80808080ff808080808080ffff04ff81b3ff80808080ffff011380ff0180ffff02ff7cffff04ff02ffff04ff05ffff04ff1bffff04ffff21ff4fff1780ff80808080808080ff8080808080ffff01ff088080ff0180ffff04ffff09ffff18ff05ffff010180ffff010180ffff09ff05ffff01818f8080ff0bff2cffff0bff24ff3080ffff0bff2cffff0bff2cffff0bff24ff3480ff0580ffff0bff2cffff02ff5cffff04ff02ffff04ff07ffff04ffff0bff24ff2480ff8080808080ffff0bff24ff8080808080ffffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff26ffff04ff02ffff04ff09ff80808080ffff02ff26ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff02ff5effff04ff02ffff04ff05ffff04ff0bffff04ffff02ff3affff04ff02ffff04ff09ffff04ff17ffff04ffff02ff26ffff04ff02ffff04ff05ff80808080ff808080808080ffff04ff17ffff04ff2fffff04ff5fffff04ff81bfff80808080808080808080ffff04ffff04ff20ffff04ff17ff808080ffff02ff7cffff04ff02ffff04ff05ffff04ffff02ff82017fffff04ffff04ffff04ff17ff2f80ffff04ffff04ff5fff81bf80ffff04ff0bff05808080ff8202ff8080ffff01ff80808080808080ffff02ff2effff04ff02ffff04ff05ffff04ff0bffff04ffff02ffff03ff3bffff01ff02ff22ffff04ff02ffff04ff05ffff04ff17ffff04ff13ffff04ff2bffff04ff5bffff04ff5fff808080808080808080ffff01ff02ffff03ffff09ff15ffff0bff13ff1dff2b8080ffff01ff0bff15ff17ff5f80ffff01ff088080ff018080ff0180ffff04ff17ffff04ff2fffff04ff5fffff04ff81bfffff04ff82017fff8080808080808080808080ff02ffff03ff05ffff011bffff010b80ff0180ff018080");
 pub const SINGLETON_TOP_LAYER_HASH: [u8; 32] =
     hex!("24e044101e57b3d8c908b8a38ad57848afd29d3eecc439dba45f4412df4954fd");
+
+/// ```text
+/// (mod
+///   (
+///     MERKLE_ROOT
+///     delegated_puzzle_hash
+///     merkle_proof
+///     member_puzzle
+///     member_solution
+///   )
+///
+///   (include merkle_utils.clib)
+///
+///   ; takes a lisp tree and returns the hash of it
+///   (defun sha256tree (TREE)
+///     (if (l TREE)
+///         (sha256 2 (sha256tree (f TREE)) (sha256tree (r TREE)))
+///   (sha256 1 TREE)))
+///
+///   (if (= MERKLE_ROOT (simplify_merkle_proof (sha256tree member_puzzle) merkle_proof))
+///       (a member_puzzle (c delegated_puzzle_hash member_solution))
+///       (x)
+///   )
+///
+/// )
+/// ```
+pub const VAULT_1_OF_N: [u8; 286] = hex!("ff02ffff01ff02ffff03ffff09ff05ffff02ff06ffff04ff02ffff04ffff0bffff0101ffff02ff04ffff04ff02ffff04ff2fff8080808080ffff04ff17ff808080808080ffff01ff02ff2fffff04ff0bff5f8080ffff01ff088080ff0180ffff04ffff01ffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff04ffff04ff02ffff04ff09ff80808080ffff02ff04ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff02ffff03ff1bffff01ff02ff06ffff04ff02ffff04ffff02ffff03ffff18ffff0101ff1380ffff01ff0bffff0102ff2bff0580ffff01ff0bffff0102ff05ff2b8080ff0180ffff04ffff04ffff17ff13ffff0181ff80ff3b80ff8080808080ffff010580ff0180ff018080");
+pub const VAULT_1_OF_N_HASH: [u8; 32] =
+    hex!("bcb9aa74893bebcfa2da87271b0330bf2773b6391144ae72262b6824d9c55939");
+
+/// ```text
+/// (mod
+///   (
+///     M  ; the number of necessary puzzles to execute
+///     MERKLE_ROOT  ; A root of all available puzzles
+///     delegated_puzzle_hash  ; A puzzle hash to run that all members must agree to
+///     member_proof  ; A partially revealed merkle tree with only the leaves being used fully revealed
+///   )
+///
+///   (include sha256tree.clib)
+///
+///   ; utility
+///   (defun merge_list (list_a list_b)
+///     (if list_a
+///         (c (f list_a) (merge_list (r list_a) list_b))
+///         list_b
+///     )
+///   )
+///
+///   ; delegated puzzle validation
+///   (defun-inline branch_hash_and_merge_info ((tree1 conditions1 total1) (tree2 conditions2 total2))
+///     (list
+///       (sha256 2 tree1 tree2)
+///       (merge_list conditions1 conditions2)
+///       (+ total1 total2)
+///     )
+///   )
+///
+///   (defun handle_branch (branch delegated_puzzle_hash)
+///     (if (l branch)
+///         (hash_and_run branch delegated_puzzle_hash)
+///         (list branch () 0)
+///     )
+///   )
+///
+///   (defun hash_and_run (tree delegated_puzzle_hash)
+///     (if (f tree)
+///         (branch_hash_and_merge_info (handle_branch (f tree) delegated_puzzle_hash) (handle_branch (r tree) delegated_puzzle_hash))
+///         (list
+///           (sha256 1 (sha256tree (f (r tree))))
+///           (a (f (r tree)) (c delegated_puzzle_hash (r (r tree))))
+///           1
+///         )
+///     )
+///   )
+///
+///   ; main checks
+///   (defun run_delegated_puzzle
+///     (
+///       M
+///       MERKLE_ROOT
+///       (
+///         proven_root
+///         conditions
+///         total_validations
+///       )
+///     )
+///
+///     (if (all (= M total_validations) (= MERKLE_ROOT proven_root))
+///         conditions
+///         (x)
+///     )
+///   )
+///
+///   ; enter main
+///   (run_delegated_puzzle
+///     M
+///     MERKLE_ROOT
+///     (hash_and_run member_proof delegated_puzzle_hash)
+///   )
+/// )
+/// ```
+pub const VAULT_M_OF_N: [u8; 622] = hex!("ff02ffff01ff02ff16ffff04ff02ffff04ff05ffff04ff0bffff04ffff02ff0cffff04ff02ffff04ff2fffff04ff17ff8080808080ff808080808080ffff04ffff01ffffff02ffff03ffff07ff0580ffff01ff02ff0cffff04ff02ffff04ff05ffff04ff0bff8080808080ffff01ff04ff05ffff01ff80ff80808080ff0180ff02ffff03ff09ffff01ff04ffff0bffff0102ffff05ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff808080808080ffff05ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff80808080808080ffff04ffff02ff0affff04ff02ffff04ffff05ffff06ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff80808080808080ffff04ffff05ffff06ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff80808080808080ff8080808080ffff04ffff10ffff05ffff06ffff06ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff8080808080808080ffff05ffff06ffff06ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff808080808080808080ff80808080ffff01ff04ffff0bffff0101ffff02ff1effff04ff02ffff04ff15ff8080808080ffff04ffff02ff15ffff04ff0bff1d8080ffff01ff0180808080ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ff0affff04ff02ffff04ff0dffff04ff0bff808080808080ffff010b80ff0180ffff02ffff03ffff22ffff09ff05ff81b780ffff09ff0bff278080ffff0157ffff01ff088080ff0180ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff1effff04ff02ffff04ff09ff80808080ffff02ff1effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const VAULT_M_OF_N_HASH: [u8; 32] =
+    hex!("de27deb2ebc7f1e1b77e1d38cc2f9d90fbd54d4b13dd4e6fa1f659177e36ed4f");
+
+/// ```text
+/// (mod
+///   (
+///     MEMBERS
+///     delegated_puzzle_hash
+///     member_solutions
+///   )
+///
+///   ; utility
+///   (include sha256tree.clib)
+///   (defun merge_list (list_a list_b)
+///     (if list_a
+///         (c (f list_a) (merge_list (r list_a) list_b))
+///         list_b
+///     )
+///   )
+///
+///   ; streamlined M of N
+///   (defun run_member (MEMBER member_solution delegated_puzzle_hash)
+///     (a MEMBER (c delegated_puzzle_hash member_solution))
+///   )
+///
+///   (defun approve_delegated_puzzle (MEMBERS member_solutions delegated_puzzle_hash)
+///     (if (r MEMBERS)  ; assumes at least 1 member at start
+///         (merge_list
+///           (run_member (f MEMBERS) (f member_solutions) delegated_puzzle_hash)
+///           (approve_delegated_puzzle (r MEMBERS) (r member_solutions) delegated_puzzle_hash)
+///         )
+///         (run_member (f MEMBERS) (f member_solutions) delegated_puzzle_hash)
+///     )
+///   )
+///
+///   ; main
+///   (approve_delegated_puzzle MEMBERS member_solutions delegated_puzzle_hash)
+/// )
+/// ```
+pub const VAULT_N_OF_N: [u8; 243] = hex!("ff02ffff01ff02ff04ffff04ff02ffff04ff05ffff04ff17ffff04ff0bff808080808080ffff04ffff01ffff02ffff03ff0dffff01ff02ff0affff04ff02ffff04ffff02ff0effff04ff02ffff04ff09ffff04ff13ffff04ff17ff808080808080ffff04ffff02ff04ffff04ff02ffff04ff0dffff04ff1bffff04ff17ff808080808080ff8080808080ffff01ff02ff0effff04ff02ffff04ff09ffff04ff13ffff04ff17ff80808080808080ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ff0affff04ff02ffff04ff0dffff04ff0bff808080808080ffff010b80ff0180ff02ff05ffff04ff17ff0b8080ff018080");
+pub const VAULT_N_OF_N_HASH: [u8; 32] =
+    hex!("d4394f50cb1d6ef130788db2e69ab0087ef79b0737179f201c1d1d2a52df1e59");
+
+/// ```text
+/// (mod
+///   (
+///     INNER_PUZZLE
+///     delegated_puzzle
+///     delegated_solution
+///     .
+///     inner_solution
+///   )
+///
+///   (include sha256tree.clib)
+///
+///   (defun merge_list (list_a list_b)
+///     (if list_a
+///         (c (f list_a) (merge_list (r list_a) list_b))
+///         list_b
+///     )
+///   )
+///
+///   (merge_list (a INNER_PUZZLE (c (sha256tree delegated_puzzle) inner_solution)) (a delegated_puzzle delegated_solution))
+/// )
+/// ```
+pub const DELEGATED_PUZZLE_FEEDER: [u8; 203] = hex!("ff02ffff01ff02ff04ffff04ff02ffff04ffff02ff05ffff04ffff02ff06ffff04ff02ffff04ff0bff80808080ff1f8080ffff04ffff02ff0bff1780ff8080808080ffff04ffff01ffff02ffff03ff05ffff01ff04ff09ffff02ff04ffff04ff02ffff04ff0dffff04ff0bff808080808080ffff010b80ff0180ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff06ffff04ff02ffff04ff09ff80808080ffff02ff06ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const DELEGATED_PUZZLE_FEEDER_HASH: [u8; 32] =
+    hex!("9db33d93853179903d4dd272a00345ee6630dc94907dbcdd96368df6931060fd");
+
+/// ```text
+/// (mod
+///   (
+///     MEMBER_VALIDATORS  ; programs that look at the conditions allowed OUT
+///     DPUZ_VALIDATORS  ; programs that validate the delegated puzzle allowed IN
+///     INNER_PUZZLE  ; the program that generates the conditions
+///     delegated_puzzle_hash
+///     member_val_solutions
+///     dpuz_val_solutions
+///     inner_solution
+///   )
+///
+///   (defun run_validators (VALIDATORS val_solutions thing_to_check)
+///     (if VALIDATORS
+///         (i  ()  ; just using this as a hook to evaluate all children
+///           (a (f VALIDATORS) (c thing_to_check (f val_solutions)))
+///           (run_validators (r VALIDATORS) (r val_solutions) thing_to_check)
+///         )
+///         ; else
+///         ()
+///     )
+///   )
+///
+///   (defun run_member_validators_and_return (MEMBER_VALIDATORS member_val_solutions inner_conditions)
+///     (i  ()  ; just using this as a hook to evaluate all children
+///       (run_validators MEMBER_VALIDATORS member_val_solutions inner_conditions)
+///       inner_conditions  ; actually returned
+///     )
+///   )
+///
+///   (run_member_validators_and_return
+///     MEMBER_VALIDATORS
+///     member_val_solutions
+///     (a INNER_PUZZLE (c delegated_puzzle_hash inner_solution))
+///     ; not part of the function call but needs to run
+///     (run_validators DPUZ_VALIDATORS dpuz_val_solutions delegated_puzzle_hash)
+///   )
+/// )
+/// ```
+pub const RESTRICTIONS: [u8; 204] = hex!("ff02ffff01ff02ff04ffff04ff02ffff04ff05ffff04ff5fffff04ffff02ff17ffff04ff2fff82017f8080ffff04ffff02ff06ffff04ff02ffff04ff0bffff04ff81bfffff04ff2fff808080808080ff80808080808080ffff04ffff01ffff03ff80ffff02ff06ffff04ff02ffff04ff05ffff04ff0bffff04ff17ff808080808080ff1780ff02ffff03ff05ffff01ff03ff80ffff02ff09ffff04ff17ff138080ffff02ff06ffff04ff02ffff04ff0dffff04ff1bffff04ff17ff80808080808080ff8080ff0180ff018080");
+pub const RESTRICTIONS_HASH: [u8; 32] =
+    hex!("a28d59d39f964a93159c986b1914694f6f2f1c9901178f91e8b0ba4045980eef");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// (mod (PUBLIC_KEY Delegated_Puzzle)  ; delegated puzzle is passed in from the above M of N layer
+///   (include condition_codes.clib)
+///
+///   (list (list AGG_SIG_ME PUBLIC_KEY Delegated_Puzzle))
+/// )
+/// ```
+pub const BLS_MEMBER: [u8; 41] =
+    hex!("ff02ffff01ff04ffff04ff02ffff04ff05ffff04ff0bff80808080ff8080ffff04ffff0132ff018080");
+pub const BLS_MEMBER_HASH: [u8; 32] =
+    hex!("21a3ae8b3ce64d41ca98d6d8df8f465c9e1bfb19ab40284a5da8479ba7fade78");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// ; Delegated_Puzzle_Hash is added to the solution in the above layer
+/// ; original_public_key, hidden_puzzle and solution are only for use in the taproot case
+/// ; set original_public_key to 0 for non-taproot case
+/// (mod (SYNTHETIC_PUBLIC_KEY Delegated_Puzzle_Hash original_public_key hidden_puzzle)
+///   (include condition_codes.clib)
+///
+///   (defmacro assert items
+///     (if (r items)
+///         (list if (f items) (c assert (r items)) (q . (x)))
+///         (f items)
+///     )
+///   )
+///
+///   ; "is_hidden_puzzle_correct" returns true iff the hidden puzzle is correctly encoded
+///
+///   (defun-inline is_hidden_puzzle_correct (SYNTHETIC_PUBLIC_KEY original_public_key hidden_puzzle_hash)
+///     (=
+///       SYNTHETIC_PUBLIC_KEY
+///       (point_add
+///         original_public_key
+///         (pubkey_for_exp (sha256 original_public_key hidden_puzzle_hash))
+///       )
+///     )
+///   )
+///
+///   ; "possibly_prepend_aggsig" is the main entry point
+///
+///   (if original_public_key
+///       (assert
+///         (is_hidden_puzzle_correct SYNTHETIC_PUBLIC_KEY original_public_key Delegated_Puzzle_Hash)
+///         ()
+///       )
+///       (list (list AGG_SIG_ME SYNTHETIC_PUBLIC_KEY Delegated_Puzzle_Hash))
+///   )
+/// )
+/// ```
+pub const BLS_WITH_TAPROOT_MEMBER: [u8; 99] = hex!("ff02ffff01ff02ffff03ff17ffff01ff02ffff03ffff09ff05ffff1dff17ffff1effff0bff17ff0b80808080ff80ffff01ff088080ff0180ffff01ff04ffff04ff02ffff04ff05ffff04ff0bff80808080ff808080ff0180ffff04ffff0132ff018080");
+pub const BLS_WITH_TAPROOT_MEMBER_HASH: [u8; 32] =
+    hex!("35d2ad31aaf0df91c965909e5112294c57a18354ee4a5aae80572080ec3b6842");
+
+/// ```text
+/// (mod (FIXED_PUZZLE_HASH Delegated_Puzzle_Hash)
+///   (if (= FIXED_PUZZLE_HASH Delegated_Puzzle_Hash)
+///       ()
+///       (x)
+///   )
+/// )
+/// ```
+pub const FIXED_PUZZLE_MEMBER: [u8; 25] =
+    hex!("ff02ffff03ffff09ff02ff0580ff80ffff01ff088080ff0180");
+pub const FIXED_PUZZLE_MEMBER_HASH: [u8; 32] =
+    hex!("34ede3eadc52ed750e405f2b9dea9891506547f651290bb606356d997c64f219");
+
+/// ```text
+/// ; member puzzle with SECP256-R1 signature provided by a passkey (ie Yubikey)
+///
+/// (mod (SECP_PK
+///     Delegated_Puzzle_Hash
+///     ; The WebAuthn authenticator data.
+///     ; See https://www.w3.org/TR/webauthn-2/#dom-authenticatorassertionresponse-authenticatordata.
+///     authenticator_data
+///     ; The WebAuthn client data JSON.
+///     ; See https://www.w3.org/TR/webauthn-2/#dom-authenticatorresponse-clientdatajson.
+///     client_data_json
+///     ; The index at which "challenge":"..." occurs in `clientDataJSON`.
+///     challenge_index
+///     ; the signature returned by the authenticator
+///     signature
+///     ; my puzzle hash
+///     puzzle_hash
+///   )
+///
+///   (include *standard-cl-23*)
+///   (include condition_codes.clib)
+///   (include sha256tree.clib)
+///
+///   (defconstant b64-charset "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")
+///
+///   (defun map-triples (fun n blob)
+///     (if (any (= n (strlen blob)) (> n (strlen blob)))
+///         ()
+///         (c (a fun (list (substr blob n (+ n 3)))) (map-triples fun (+ n 3) blob))
+///     )
+///   )
+///
+///   (defun flat-map (fun lst)
+///     (if lst
+///         (if (f lst)
+///             (c (a fun (list (f (f lst)))) (flat-map fun (c (r (f lst)) (r lst))))
+///             (flat-map fun (r lst))
+///         )
+///         ()
+///     )
+///   )
+///
+///   (defun lookup-b64 (byte)
+///     (substr b64-charset byte (+ byte 1))
+///   )
+///
+///   (defun-inline trim-padding (plen output)
+///     (substr output 0 (- (strlen output) plen))
+///   )
+///
+///   (defun-inline convert (int)
+///     (if (> int -1) int (+ int 256))
+///   )
+///
+///   (defun b64-encode-blob (blob)
+///     (assign
+///       pad_mod (r (divmod (strlen blob) 3))
+///       padding (if pad_mod (- 3 pad_mod) 0)
+///       bytes (concat blob (substr 0x000000 0 padding))
+///       sextets
+///       (map-triples (lambda ((& padding) bytes)
+///           (assign
+///             (fb_upper . fb_lower) (divmod (convert (substr bytes 0 1)) 4)
+///             (sb_upper . sb_lower) (divmod (convert (substr bytes 1 2)) 16)
+///             (tb_upper . tb_lower) (divmod (convert (substr bytes 2 3)) 64)
+///             (list
+///               fb_upper
+///               (logior (ash fb_lower 4) sb_upper)
+///               (logior (ash sb_lower 2) tb_upper)
+///               tb_lower
+///             )
+///           )
+///         )
+///         0
+///         bytes
+///       )
+///       (trim-padding padding (a (c (list 14) (flat-map lookup-b64 sextets)) ()))
+///     )
+///   )
+///
+///   (assign
+///     message (b64-encode-blob (sha256 Delegated_Puzzle_Hash puzzle_hash))
+///     challenge (concat '"challenge":"' message '"')
+///     (if (= (substr client_data_json challenge_index (+ challenge_index (strlen challenge))) challenge)
+///         (c
+///           (list ASSERT_MY_PUZZLEHASH puzzle_hash)
+///           (secp256r1_verify SECP_PK (sha256 authenticator_data (sha256 client_data_json)) signature)
+///         )
+///         (x)
+///     )
+///   )
+/// )
+/// ```
+pub const PASSKEY_MEMBER_PUZZLE_ASSERT: [u8; 1418] = hex!("ff02ffff01ff02ff3effff04ff02ffff04ff03ffff04ffff02ff2cffff04ff02ffff04ffff0bff0bff82017f80ff80808080ff8080808080ffff04ffff01ffffffff02ffff03ffff21ffff09ff0bffff0dff178080ffff15ff0bffff0dff17808080ffff01ff0180ffff01ff04ffff02ff05ffff04ffff0cff17ff0bffff10ff0bffff01038080ff808080ffff02ff10ffff04ff02ffff04ff05ffff04ffff10ff0bffff010380ffff04ff17ff8080808080808080ff0180ff02ffff03ff0bffff01ff02ffff03ff13ffff01ff04ffff02ff05ffff04ff23ff808080ffff02ff18ffff04ff02ffff04ff05ffff04ffff04ff33ff1b80ff808080808080ffff01ff02ff18ffff04ff02ffff04ff05ffff04ff1bff808080808080ff0180ffff01ff018080ff0180ffff0cffff01c0404142434445464748494a4b4c4d4e4f505152535455565758595a6162636465666768696a6b6c6d6e6f707172737475767778797a303132333435363738392d5fff05ffff10ff05ffff01018080ffff02ff3cffff04ff02ffff04ff03ffff04ffff06ffff14ffff0dff0580ffff01038080ff8080808080ff02ff12ffff04ff02ffff04ff03ffff04ffff02ffff03ff0bffff01ff11ffff0103ff0b80ffff01ff018080ff0180ff8080808080ffffff02ff2affff04ff02ffff04ff03ffff04ffff0eff11ffff0cffff0183000000ff80ff0b8080ff8080808080ffff02ff2effff04ff02ffff04ff03ffff04ffff02ff10ffff04ff02ffff04ffff04ffff0102ffff04ffff04ffff0101ffff04ffff0102ffff04ffff04ffff0101ff1680ffff04ffff04ffff0104ffff04ffff04ffff0101ff0280ffff04ffff0101ff80808080ff8080808080ffff04ffff04ffff0104ffff04ffff04ffff0101ffff04ff15ff808080ffff04ffff0101ff80808080ff80808080ffff04ff80ffff04ff0bff808080808080ff8080808080ff04ff4fffff04ffff19ffff16ff6fffff010480ff2780ffff04ffff19ffff16ff37ffff010280ff1380ffff04ff1bff8080808080ffff02ff3affff04ff02ffff04ffff04ffff04ff09ff8080ffff04ff0bff808080ffff04ffff14ffff02ffff03ffff15ffff0cff0bffff0102ffff010380ffff0181ff80ffff01ff0cff0bffff0102ffff010380ffff01ff10ffff0cff0bffff0102ffff010380ffff018201008080ff0180ffff014080ffff04ffff14ffff02ffff03ffff15ffff0cff0bffff0101ffff010280ffff0181ff80ffff01ff0cff0bffff0101ffff010280ffff01ff10ffff0cff0bffff0101ffff010280ffff018201008080ff0180ffff011080ffff04ffff14ffff02ffff03ffff15ffff0cff0bff80ffff010180ffff0181ff80ffff01ff0cff0bff80ffff010180ffff01ff10ffff0cff0bff80ffff010180ffff018201008080ff0180ffff010480ff80808080808080ffff0cffff02ffff04ffff04ffff010eff8080ffff02ff18ffff04ff02ffff04ffff04ffff0102ffff04ffff04ffff0101ff1480ffff04ffff04ffff0104ffff04ffff04ffff0101ff0280ffff04ffff0101ff80808080ff80808080ffff04ff0bff808080808080ff8080ff80ffff11ffff0dffff02ffff04ffff04ffff010eff8080ffff02ff18ffff04ff02ffff04ffff04ffff0102ffff04ffff04ffff0101ff1480ffff04ffff04ffff0104ffff04ffff04ffff0101ff0280ffff04ffff0101ff80808080ff80808080ffff04ff0bff808080808080ff808080ff298080ff02ffff03ffff09ffff0cff5dff8200bdffff10ff8200bdffff0dffff0effff018d226368616c6c656e6765223a22ff0bffff012280808080ffff0effff018d226368616c6c656e6765223a22ff0bffff01228080ffff01ff04ffff04ffff0148ffff04ff8202fdff808080ffff841c3a8f00ff09ffff0bff2dffff0bff5d8080ff82017d8080ffff01ff088080ff0180ff018080");
+pub const PASSKEY_MEMBER_PUZZLE_ASSERT_HASH: [u8; 32] =
+    hex!("e6db5ba2eeded13c47216512a7a4662b95121c145580db6312cb711aaadcec32");
+
+/// ```text
+/// ; member puzzle with SECP256-R1 signature provided by a passkey (ie Yubikey)
+///
+/// (mod (SECP_PK
+///     Delegated_Puzzle_Hash
+///     ; The WebAuthn authenticator data.
+///     ; See https://www.w3.org/TR/webauthn-2/#dom-authenticatorassertionresponse-authenticatordata.
+///     authenticator_data
+///     ; The WebAuthn client data JSON.
+///     ; See https://www.w3.org/TR/webauthn-2/#dom-authenticatorresponse-clientdatajson.
+///     client_data_json
+///     ; The index at which "challenge":"..." occurs in `clientDataJSON`.
+///     challenge_index
+///     ; the signature returned by the authenticator
+///     signature
+///     ; my coin id
+///     coin_id
+///   )
+///
+///   (include *standard-cl-23*)
+///   (include condition_codes.clib)
+///   (include sha256tree.clib)
+///
+///   (defconstant b64-charset "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")
+///
+///   (defun map-triples (fun n blob)
+///     (if (any (= n (strlen blob)) (> n (strlen blob)))
+///         ()
+///         (c (a fun (list (substr blob n (+ n 3)))) (map-triples fun (+ n 3) blob))
+///     )
+///   )
+///
+///   (defun flat-map (fun lst)
+///     (if lst
+///         (if (f lst)
+///             (c (a fun (list (f (f lst)))) (flat-map fun (c (r (f lst)) (r lst))))
+///             (flat-map fun (r lst))
+///         )
+///         ()
+///     )
+///   )
+///
+///   (defun lookup-b64 (byte)
+///     (substr b64-charset byte (+ byte 1))
+///   )
+///
+///   (defun-inline trim-padding (plen output)
+///     (substr output 0 (- (strlen output) plen))
+///   )
+///
+///   (defun-inline convert (int)
+///     (if (> int -1) int (+ int 256))
+///   )
+///
+///   (defun b64-encode-blob (blob)
+///     (assign
+///       pad_mod (r (divmod (strlen blob) 3))
+///       padding (if pad_mod (- 3 pad_mod) 0)
+///       bytes (concat blob (substr 0x000000 0 padding))
+///       sextets
+///       (map-triples (lambda ((& padding) bytes)
+///           (assign
+///             (fb_upper . fb_lower) (divmod (convert (substr bytes 0 1)) 4)
+///             (sb_upper . sb_lower) (divmod (convert (substr bytes 1 2)) 16)
+///             (tb_upper . tb_lower) (divmod (convert (substr bytes 2 3)) 64)
+///             (list
+///               fb_upper
+///               (logior (ash fb_lower 4) sb_upper)
+///               (logior (ash sb_lower 2) tb_upper)
+///               tb_lower
+///             )
+///           )
+///         )
+///         0
+///         bytes
+///       )
+///       (trim-padding padding (a (c (list 14) (flat-map lookup-b64 sextets)) ()))
+///     )
+///   )
+///
+///   (assign
+///     message (b64-encode-blob (sha256 Delegated_Puzzle_Hash coin_id))
+///     challenge (concat '"challenge":"' message '"')
+///     (if (= (substr client_data_json challenge_index (+ challenge_index (strlen challenge))) challenge)
+///         (c
+///           (list ASSERT_MY_COIN_ID coin_id)
+///           (secp256r1_verify SECP_PK (sha256 authenticator_data (sha256 client_data_json)) signature)
+///         )
+///         (x)
+///     )
+///   )
+/// )
+/// ```
+pub const PASSKEY_MEMBER: [u8; 1418] = hex!("ff02ffff01ff02ff3effff04ff02ffff04ff03ffff04ffff02ff2cffff04ff02ffff04ffff0bff0bff82017f80ff80808080ff8080808080ffff04ffff01ffffffff02ffff03ffff21ffff09ff0bffff0dff178080ffff15ff0bffff0dff17808080ffff01ff0180ffff01ff04ffff02ff05ffff04ffff0cff17ff0bffff10ff0bffff01038080ff808080ffff02ff10ffff04ff02ffff04ff05ffff04ffff10ff0bffff010380ffff04ff17ff8080808080808080ff0180ff02ffff03ff0bffff01ff02ffff03ff13ffff01ff04ffff02ff05ffff04ff23ff808080ffff02ff18ffff04ff02ffff04ff05ffff04ffff04ff33ff1b80ff808080808080ffff01ff02ff18ffff04ff02ffff04ff05ffff04ff1bff808080808080ff0180ffff01ff018080ff0180ffff0cffff01c0404142434445464748494a4b4c4d4e4f505152535455565758595a6162636465666768696a6b6c6d6e6f707172737475767778797a303132333435363738392d5fff05ffff10ff05ffff01018080ffff02ff3cffff04ff02ffff04ff03ffff04ffff06ffff14ffff0dff0580ffff01038080ff8080808080ff02ff12ffff04ff02ffff04ff03ffff04ffff02ffff03ff0bffff01ff11ffff0103ff0b80ffff01ff018080ff0180ff8080808080ffffff02ff2affff04ff02ffff04ff03ffff04ffff0eff11ffff0cffff0183000000ff80ff0b8080ff8080808080ffff02ff2effff04ff02ffff04ff03ffff04ffff02ff10ffff04ff02ffff04ffff04ffff0102ffff04ffff04ffff0101ffff04ffff0102ffff04ffff04ffff0101ff1680ffff04ffff04ffff0104ffff04ffff04ffff0101ff0280ffff04ffff0101ff80808080ff8080808080ffff04ffff04ffff0104ffff04ffff04ffff0101ffff04ff15ff808080ffff04ffff0101ff80808080ff80808080ffff04ff80ffff04ff0bff808080808080ff8080808080ff04ff4fffff04ffff19ffff16ff6fffff010480ff2780ffff04ffff19ffff16ff37ffff010280ff1380ffff04ff1bff8080808080ffff02ff3affff04ff02ffff04ffff04ffff04ff09ff8080ffff04ff0bff808080ffff04ffff14ffff02ffff03ffff15ffff0cff0bffff0102ffff010380ffff0181ff80ffff01ff0cff0bffff0102ffff010380ffff01ff10ffff0cff0bffff0102ffff010380ffff018201008080ff0180ffff014080ffff04ffff14ffff02ffff03ffff15ffff0cff0bffff0101ffff010280ffff0181ff80ffff01ff0cff0bffff0101ffff010280ffff01ff10ffff0cff0bffff0101ffff010280ffff018201008080ff0180ffff011080ffff04ffff14ffff02ffff03ffff15ffff0cff0bff80ffff010180ffff0181ff80ffff01ff0cff0bff80ffff010180ffff01ff10ffff0cff0bff80ffff010180ffff018201008080ff0180ffff010480ff80808080808080ffff0cffff02ffff04ffff04ffff010eff8080ffff02ff18ffff04ff02ffff04ffff04ffff0102ffff04ffff04ffff0101ff1480ffff04ffff04ffff0104ffff04ffff04ffff0101ff0280ffff04ffff0101ff80808080ff80808080ffff04ff0bff808080808080ff8080ff80ffff11ffff0dffff02ffff04ffff04ffff010eff8080ffff02ff18ffff04ff02ffff04ffff04ffff0102ffff04ffff04ffff0101ff1480ffff04ffff04ffff0104ffff04ffff04ffff0101ff0280ffff04ffff0101ff80808080ff80808080ffff04ff0bff808080808080ff808080ff298080ff02ffff03ffff09ffff0cff5dff8200bdffff10ff8200bdffff0dffff0effff018d226368616c6c656e6765223a22ff0bffff012280808080ffff0effff018d226368616c6c656e6765223a22ff0bffff01228080ffff01ff04ffff04ffff0146ffff04ff8202fdff808080ffff841c3a8f00ff09ffff0bff2dffff0bff5d8080ff82017d8080ffff01ff088080ff0180ff018080");
+pub const PASSKEY_MEMBER_HASH: [u8; 32] =
+    hex!("1d66225b71ec6caf33e3771ebaa7fcd50826fd31844dc8258116b37b3ff3c7ae");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// ; this code requires a signature including the coin's puzzle rather than the default which is the coin's id
+/// ; this enables the signature to be used later, however users must be aware of replayability
+///
+/// (mod (SECP_PK Delegated_Puzzle_Hash my_puzhash signature)  ; delegated puzzle is passed in from the above M of N layer
+///   (include condition_codes.clib)
+///
+///   (c
+///     (list ASSERT_MY_PUZZLEHASH my_puzhash)
+///     (secp256k1_verify SECP_PK (sha256 Delegated_Puzzle_Hash my_puzhash) signature)
+///   )
+/// )
+/// ```
+pub const SECP256K1_MEMBER_PUZZLE_ASSERT: [u8; 53] = hex!("ff02ffff01ff04ffff04ff02ffff04ff17ff808080ffff8413d61f00ff05ffff0bff0bff1780ff2f8080ffff04ffff0148ff018080");
+pub const SECP256K1_MEMBER_PUZZLE_ASSERT_HASH: [u8; 32] =
+    hex!("67d591ffeb00571269d401f41a6a43ceb927b5087074ad4446ff22400a010e87");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// (mod (SECP_PK Delegated_Puzzle_Hash my_id signature)  ; delegated puzzle is passed in from the above M of N layer
+///   (include condition_codes.clib)
+///
+///   (c
+///     (list ASSERT_MY_COIN_ID my_id)
+///     (secp256k1_verify SECP_PK (sha256 Delegated_Puzzle_Hash my_id) signature)
+///   )
+/// )
+/// ```
+pub const SECP256K1_MEMBER: [u8; 53] = hex!("ff02ffff01ff04ffff04ff02ffff04ff17ff808080ffff8413d61f00ff05ffff0bff0bff1780ff2f8080ffff04ffff0146ff018080");
+pub const SECP256K1_MEMBER_HASH: [u8; 32] =
+    hex!("2b05daf134c9163acc8f2ac05b61f7d8328fca3dcc963154a28e89bcfc4dbfca");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// ; this code requires a signature including the coin's puzzle rather than the default which is the coin's id
+/// ; this enables the signature to be used later, however users must be aware of replayability
+///
+/// (mod (SECP_PK Delegated_Puzzle_Hash my_puzhash signature)  ; delegated puzzle is passed in from the above M of N layer
+///   (include condition_codes.clib)
+///
+///   (c
+///     (list ASSERT_MY_PUZZLEHASH my_puzhash)
+///     (secp256r1_verify SECP_PK (sha256 Delegated_Puzzle_Hash my_puzhash) signature)
+///   )
+/// )
+/// ```
+pub const SECP256R1_MEMBER_PUZZLE_ASSERT: [u8; 53] = hex!("ff02ffff01ff04ffff04ff02ffff04ff17ff808080ffff841c3a8f00ff05ffff0bff0bff1780ff2f8080ffff04ffff0148ff018080");
+pub const SECP256R1_MEMBER_PUZZLE_ASSERT_HASH: [u8; 32] =
+    hex!("d77bbc050bff8dfe4eb4544fa2bf0d0fd0463b96801bf6445687bd35985e71db");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// (mod (SECP_PK Delegated_Puzzle_Hash my_id signature)  ; delegated puzzle is passed in from the above M of N layer
+///   (include condition_codes.clib)
+///
+///   (c
+///     (list ASSERT_MY_COIN_ID my_id)
+///     (secp256r1_verify SECP_PK (sha256 Delegated_Puzzle_Hash my_id) signature)
+///   )
+/// )
+/// ```
+pub const SECP256R1_MEMBER: [u8; 53] = hex!("ff02ffff01ff04ffff04ff02ffff04ff17ff808080ffff841c3a8f00ff05ffff0bff0bff1780ff2f8080ffff04ffff0146ff018080");
+pub const SECP256R1_MEMBER_HASH: [u8; 32] =
+    hex!("05aaa1f2fb6c48b5bce952b09f3da99afa4241989878a9919aafb7d74b70ac54");
+
+/// ```text
+/// (mod (SINGLETON_STRUCT Delegated_Puzzle singleton_innerpuzhash singleton_amount)
+///   ; SINGLETON_STRUCT is ((SINGLETON_MOD_HASH, (LAUNCHER_ID, LAUNCHER_PUZZLE_HASH)))
+///
+///   (include condition_codes.clib)
+///   (include curry-and-treehash.clib)
+///
+///   ; return the full puzzlehash for a singleton with the innerpuzzle curried in
+///   ; puzzle-hash-of-curried-function is imported from curry-and-treehash.clib
+///   (defun-inline calculate_full_puzzle_hash (SINGLETON_STRUCT inner_puzzle_hash)
+///     (puzzle-hash-of-curried-function (f SINGLETON_STRUCT)
+///       inner_puzzle_hash
+///       (sha256tree SINGLETON_STRUCT)
+///     )
+///   )
+///
+///   (list (list
+///       RECEIVE_MESSAGE
+///       0x17  ; mode = puzzle sender, coin receiver -> 0x00 010 111
+///       Delegated_Puzzle
+///       (calculate_full_puzzle_hash SINGLETON_STRUCT singleton_innerpuzhash)
+///   ))
+/// )
+/// ```
+pub const SINGLETON_MEMBER: [u8; 361] = hex!("ff02ffff01ff04ffff04ff12ffff04ffff0117ffff04ff0bffff04ffff02ff2effff04ff02ffff04ff09ffff04ff17ffff04ffff02ff3effff04ff02ffff04ff05ff80808080ff808080808080ff8080808080ff8080ffff04ffff01ffffff0204ff0101ffff4302ffff02ffff03ff05ffff01ff02ff16ffff04ff02ffff04ff0dffff04ffff0bff1affff0bff14ff1880ffff0bff1affff0bff1affff0bff14ff1c80ff0980ffff0bff1aff0bffff0bff14ff8080808080ff8080808080ffff010b80ff0180ffff0bff1affff0bff14ff1080ffff0bff1affff0bff1affff0bff14ff1c80ff0580ffff0bff1affff02ff16ffff04ff02ffff04ff07ffff04ffff0bff14ff1480ff8080808080ffff0bff14ff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff3effff04ff02ffff04ff09ff80808080ffff02ff3effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const SINGLETON_MEMBER_HASH: [u8; 32] =
+    hex!("6f1cebc5a6d3661ad87d3558146259ca580729b244b7662757f8d1c34a6a9ad9");
+
+/// ```text
+/// ; This is a highly specific puzzle that enforces that any new create coins are a 1of2 w/ a fixed left side
+/// ; and a variable right side that is put under pre-committed restrictions.
+/// ;
+/// ; The framework this is designed to fit in doesn't really support subtree behavior like this, so the specificity and
+/// ; limited flexibility of this puzzle is due to the fact that it's sort of a hack to support an existing feature with
+/// ; a framework poorly designed for it.
+/// (mod
+///   (
+///     DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///     1_OF_N_MOD_HASH
+///     LEFT_SIDE_SUBTREE_HASH_HASH
+///     INDEX_WRAPPER_HASH
+///     NONCE
+///     RESTRICTION_MOD_HASH
+///     MEMBER_VALIDATOR_LIST_HASH
+///     DPUZ_VALIDATOR_LIST_HASH
+///     Conditions
+///     new_right_side_member_hash
+///   )
+///
+///   (include curry.clib)
+///   (include utility_macros.clib)
+///   (include condition_codes.clib)
+///   (defconstant ONE 1)
+///
+///   (defun check_coins (conditions fixed_puzzle_hash)
+///     (if conditions
+///         (if (and (= (f (f conditions)) CREATE_COIN) (not (= (f (r (f conditions))) fixed_puzzle_hash)))
+///             (x)  ; (f (r (f conditions))) fixed_puzzle_hash)
+///             (check_coins (r conditions) fixed_puzzle_hash)
+///         )
+///         1  ; this will pass assert
+///     )
+///   )
+///
+///   (defun-inline calculate_fixed_puzzle_hash
+///     (
+///       DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///       1_OF_N_MOD_HASH
+///       LEFT_SIDE_SUBTREE_HASH_HASH
+///       INDEX_WRAPPER_HASH
+///       NONCE
+///       RESTRICTION_MOD_HASH
+///       MEMBER_VALIDATOR_LIST_HASH
+///       DPUZ_VALIDATOR_LIST_HASH
+///       new_right_side_member_hash
+///     )
+///
+///
+///     (curry_hashes INDEX_WRAPPER_HASH
+///       (sha256 ONE NONCE)
+///       (curry_hashes DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///         (curry_hashes 1_OF_N_MOD_HASH
+///           (sha256 ONE (sha256 TWO
+///               LEFT_SIDE_SUBTREE_HASH_HASH
+///               ; right side calculation
+///               (sha256 ONE (curry_hashes INDEX_WRAPPER_HASH
+///                   (sha256 ONE NONCE)
+///                   (curry_hashes RESTRICTION_MOD_HASH
+///                     MEMBER_VALIDATOR_LIST_HASH
+///                     DPUZ_VALIDATOR_LIST_HASH
+///                     new_right_side_member_hash
+///                   )
+///               ))
+///           ))
+///         )
+///       )
+///     )
+///   )
+///
+///   (assert
+///     (check_coins
+///       Conditions
+///       (calculate_fixed_puzzle_hash
+///         DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///         1_OF_N_MOD_HASH
+///         LEFT_SIDE_SUBTREE_HASH_HASH
+///         INDEX_WRAPPER_HASH
+///         NONCE
+///         RESTRICTION_MOD_HASH
+///         MEMBER_VALIDATOR_LIST_HASH
+///         DPUZ_VALIDATOR_LIST_HASH
+///         new_right_side_member_hash
+///       )
+///     )
+///     ; then
+///     Conditions
+///   )
+/// )
+/// ```
+pub const FORCE_1_OF_2_W_RESTRICTED_VARIABLE: [u8; 650] = hex!("ff02ffff01ff02ffff03ffff02ff12ffff04ff02ffff04ff8205ffffff04ffff02ff16ffff04ff02ffff04ff2fffff04ffff0bff18ff5f80ffff04ffff02ff16ffff04ff02ffff04ff05ffff04ffff02ff16ffff04ff02ffff04ff0bffff04ffff0bff18ffff0bff14ff17ffff0bff18ffff02ff16ffff04ff02ffff04ff2fffff04ffff0bff18ff5f80ffff04ffff02ff16ffff04ff02ffff04ff81bfffff04ff82017fffff04ff8202ffffff04ff820bffff80808080808080ff808080808080808080ff8080808080ff8080808080ff808080808080ff8080808080ffff018205ffffff01ff088080ff0180ffff04ffff01ffffff3301ff02ff02ffff03ff05ffff01ff0bff7affff02ff1effff04ff02ffff04ff09ffff04ffff02ff1cffff04ff02ffff04ff0dff80808080ff808080808080ffff016a80ff0180ffffff02ffff03ff05ffff01ff02ffff03ffff02ffff03ffff09ff11ff1080ffff01ff02ffff03ffff20ffff09ff29ff0b8080ffff01ff0101ff8080ff0180ff8080ff0180ffff01ff0880ffff01ff02ff12ffff04ff02ffff04ff0dffff04ff0bff808080808080ff0180ffff01ff010180ff0180ffffa04bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459aa09dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2ffa102a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222a102a8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5ffff0bff5affff02ff1effff04ff02ffff04ff05ffff04ffff02ff1cffff04ff02ffff04ff07ff80808080ff808080808080ff0bff14ffff0bff14ff6aff0580ffff0bff14ff0bff4a8080ff018080");
+pub const FORCE_1_OF_2_W_RESTRICTED_VARIABLE_HASH: [u8; 32] =
+    hex!("4f7bc8f30deb6dad75a1e29ceacb67fd0fe0eda79173e45295ff2cfbb8de53c6");
+
+/// ```text
+/// ; This is a restriction on delegated puzzles intended to force a coin announcement
+/// ;
+/// ; The idea behind enforcing this is that it makes the current coin spend non-replayable since it will be implictly
+/// ; asserting that a specific coin ID is spent in tandem.
+/// (mod
+///   (
+///     Conditions
+///   )
+///
+///   (include condition_codes.clib)
+///
+///   (defun check_conditions (conditions)
+///     ; If we run out of conditions without finding an assertion, this will raise with "path into atom"
+///     (if (= (f (f conditions)) ASSERT_COIN_ANNOUNCEMENT)
+///         conditions
+///         (c (f conditions) (check_conditions (r conditions)))
+///     )
+///   )
+///
+///   (check_conditions Conditions)
+/// )
+/// ```
+pub const FORCE_ASSERT_COIN_ANNOUNCEMENT: [u8; 85] = hex!("ff02ffff01ff02ff06ffff04ff02ffff04ff05ff80808080ffff04ffff01ff3dff02ffff03ffff09ff11ff0480ffff0105ffff01ff04ff09ffff02ff06ffff04ff02ffff04ff0dff808080808080ff0180ff018080");
+pub const FORCE_ASSERT_COIN_ANNOUNCEMENT_HASH: [u8; 32] =
+    hex!("ca0daca027e5ebd4a61fad7e32cfe1e984ad5b561c2fc08dea30accf3a191fab");
+
+/// ```text
+/// ; This is a restriction on delegated puzzles intended to force a message that asserts the recipient's coin ID
+/// ;
+/// ; The idea behind enforcing this is that it makes the current coin spend non-replayable since it will be implictly
+/// ; asserting that a specific coin ID is spent in tandem.
+/// (mod
+///   (
+///     Conditions
+///   )
+///
+///   (include condition_codes.clib)
+///   (include utility_macros.clib)
+///
+///   (defun check_conditions (conditions)
+///     ; If we run out of conditions without finding an assertion, this will raise with "path into atom"
+///     (if (and
+///           (= (f (f conditions)) SEND_MESSAGE)
+///           ; This message filter will make sure that the last three bits of the bitmask are set.
+///           ; The reason we do this is to make sure that there will be a RECIPIENT whose coin ID must be spent
+///           ; in order for this spend to happen.
+///           (logand (f (r (f conditions))) 0x07)  ; 0x07 == 00 000 111
+///         )
+///         conditions
+///         (c (f conditions) (check_conditions (r conditions)))
+///     )
+///   )
+///
+///   (check_conditions Conditions)
+/// )
+/// ```
+pub const FORCE_COIN_MESSAGE: [u8; 127] = hex!("ff02ffff01ff02ff06ffff04ff02ffff04ff05ff80808080ffff04ffff01ff42ff02ffff03ffff02ffff03ffff09ff11ff0480ffff01ff02ffff03ffff18ff29ffff010780ffff01ff0101ff8080ff0180ff8080ff0180ffff0105ffff01ff04ff09ffff02ff06ffff04ff02ffff04ff0dff808080808080ff0180ff018080");
+pub const FORCE_COIN_MESSAGE_HASH: [u8; 32] =
+    hex!("9618c96b30b96362f6c01716a11f76c630a786697d5bac92345f5ff90b882268");
+
+/// ```text
+/// ; This is a highly specific puzzle that enforces that any new create coins are a 1of2 w/ a fixed left side
+/// ; and a variable right side that is put under pre-committed restrictions.
+/// ;
+/// ; The framework this is designed to fit in doesn't really support subtree behavior like this, so the specificity and
+/// ; limited flexibility of this puzzle is due to the fact that it's sort of a hack to support an existing feature with
+/// ; a framework poorly designed for it.
+/// (mod
+///   (
+///     DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///     1_OF_N_MOD_HASH
+///     LEFT_SIDE_SUBTREE_HASH_HASH
+///     INDEX_WRAPPER_HASH
+///     NONCE
+///     RESTRICTION_MOD_HASH
+///     MEMBER_VALIDATOR_LIST_HASH
+///     DPUZ_VALIDATOR_LIST_HASH
+///     Conditions
+///     new_right_side_member_hash
+///   )
+///
+///   (include curry.clib)
+///   (include utility_macros.clib)
+///   (include condition_codes.clib)
+///   (defconstant ONE 1)
+///
+///   (defun check_coins (conditions fixed_puzzle_hash)
+///     (if conditions
+///         (if (any
+///             (= (f (f conditions)) SEND_MESSAGE)
+///             (= (f (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
+///             (= (f (f conditions)) CREATE_COIN_ANNOUNCEMENT)
+///             (and (= (f (f conditions)) CREATE_COIN) (not (= (f (r (f conditions))) fixed_puzzle_hash)))
+///           )
+///             (x)
+///             (check_coins (r conditions) fixed_puzzle_hash)
+///         )
+///         1
+///     )
+///   )
+///
+///   (defun-inline calculate_fixed_puzzle_hash
+///     (
+///       DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///       1_OF_N_MOD_HASH
+///       LEFT_SIDE_SUBTREE_HASH_HASH
+///       INDEX_WRAPPER_HASH
+///       NONCE
+///       RESTRICTION_MOD_HASH
+///       MEMBER_VALIDATOR_LIST_HASH
+///       DPUZ_VALIDATOR_LIST_HASH
+///       new_right_side_member_hash
+///     )
+///
+///
+///     (curry_hashes INDEX_WRAPPER_HASH
+///       (sha256 ONE NONCE)
+///       (curry_hashes DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///         (curry_hashes 1_OF_N_MOD_HASH
+///           (sha256 ONE (sha256 TWO
+///               LEFT_SIDE_SUBTREE_HASH_HASH
+///               ; right side calculation
+///               (sha256 ONE (curry_hashes INDEX_WRAPPER_HASH
+///                   (sha256 ONE NONCE)
+///                   (curry_hashes RESTRICTION_MOD_HASH
+///                     MEMBER_VALIDATOR_LIST_HASH
+///                     DPUZ_VALIDATOR_LIST_HASH
+///                     new_right_side_member_hash
+///                   )
+///               ))
+///           ))
+///         )
+///       )
+///     )
+///   )
+///
+///   (assert
+///     (check_coins
+///       Conditions
+///       (calculate_fixed_puzzle_hash
+///         DELEGATED_PUZZLE_FEEDER_MOD_HASH
+///         1_OF_N_MOD_HASH
+///         LEFT_SIDE_SUBTREE_HASH_HASH
+///         INDEX_WRAPPER_HASH
+///         NONCE
+///         RESTRICTION_MOD_HASH
+///         MEMBER_VALIDATOR_LIST_HASH
+///         DPUZ_VALIDATOR_LIST_HASH
+///         new_right_side_member_hash
+///       )
+///     )
+///     ; then
+///     Conditions
+///   )
+/// )
+/// ```
+pub const RECOVERY: [u8; 684] = hex!("ff02ffff01ff02ffff03ffff02ff3affff04ff02ffff04ff8205ffffff04ffff02ff2effff04ff02ffff04ff2fffff04ffff0bff2cff5f80ffff04ffff02ff2effff04ff02ffff04ff05ffff04ffff02ff2effff04ff02ffff04ff0bffff04ffff0bff2cffff0bff12ff17ffff0bff2cffff02ff2effff04ff02ffff04ff2fffff04ffff0bff2cff5f80ffff04ffff02ff2effff04ff02ffff04ff81bfffff04ff82017fffff04ff8202ffffff04ff820bffff80808080808080ff808080808080808080ff8080808080ff8080808080ff808080808080ff8080808080ffff018205ffffff01ff088080ff0180ffff04ffff01ffffff333cff3eff0142ffff02ffff02ffff03ff05ffff01ff0bff76ffff02ff3effff04ff02ffff04ff09ffff04ffff02ff2affff04ff02ffff04ff0dff80808080ff808080808080ffff016680ff0180ff02ffff03ff05ffff01ff02ffff03ffff21ffff09ff11ff3c80ffff09ff11ff1480ffff09ff11ff1880ffff02ffff03ffff09ff11ff1080ffff01ff02ffff03ffff20ffff09ff29ff0b8080ffff01ff0101ff8080ff0180ff8080ff018080ffff01ff0880ffff01ff02ff3affff04ff02ffff04ff0dffff04ff0bff808080808080ff0180ffff01ff010180ff0180ffffffa04bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459aa09dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2ffa102a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222a102a8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5ffff0bff56ffff02ff3effff04ff02ffff04ff05ffff04ffff02ff2affff04ff02ffff04ff07ff80808080ff808080808080ff0bff12ffff0bff12ff66ff0580ffff0bff12ff0bff468080ff018080");
+pub const RECOVERY_HASH: [u8; 32] =
+    hex!("8b71805f8e559ab8df3342691d5be28a6e57c541778753598fc88d7591699bd1");
+
+/// ```text
+/// (mod
+///   (
+///     TIMELOCK
+///     Conditions
+///   )
+///
+///   (include condition_codes.clib)
+///   (include utility_macros.clib)
+///
+///   (defun check_conditions (TIMELOCK conditions)
+///     (if (and (= (f (f conditions)) ASSERT_SECONDS_RELATIVE) (= (f (r (f conditions))) TIMELOCK))
+///         conditions
+///         (c (f conditions) (check_conditions TIMELOCK (r conditions)))
+///     )
+///   )
+///
+///   (check_conditions TIMELOCK Conditions)
+/// )
+/// ```
+pub const TIMELOCK: [u8; 137] = hex!("ff02ffff01ff02ff06ffff04ff02ffff04ff05ffff04ff0bff8080808080ffff04ffff01ff50ff02ffff03ffff02ffff03ffff09ff23ff0480ffff01ff02ffff03ffff09ff53ff0580ffff01ff0101ff8080ff0180ff8080ff0180ffff010bffff01ff04ff13ffff02ff06ffff04ff02ffff04ff05ffff04ff1bff80808080808080ff0180ff018080");
+pub const TIMELOCK_HASH: [u8; 32] =
+    hex!("a6f96d8ecf9bd29e8c41822d231408823707b587bc0d372e5db4ac9733cbea3c");
+
+/// ```text
+/// (mod
+///   (
+///     WRAPPER
+///     DELEGATED_PUZZLE
+///     wrapper_solution
+///     delegated_solution
+///   )
+///
+///   (a WRAPPER (c (a DELEGATED_PUZZLE delegated_solution) wrapper_solution))
+/// )
+/// ```
+pub const ADD_DPUZ_WRAPPER: [u8; 19] = hex!("ff02ff02ffff04ffff02ff05ff1780ff0b8080");
+pub const ADD_DPUZ_WRAPPER_HASH: [u8; 32] =
+    hex!("6427724905f2dcf8187300ef9a0436a3c96198e4fcd17101d1ded9bc61c3f3bf");
+
+/// ```text
+/// ; This apparent monstrosity of a chialisp file really does a very simple thing and gets it relative ugliness from
+/// ; special attention paid to optimizing it.
+/// ;
+/// ; The goal of the function is to make sure that some delegated puzzle (inner_most_puzzle_hash) is wrapped by a number
+/// ; of wrappers (WRAPPER_STACK) that use a specific base puzzle (ADD_WRAPPER_MOD). It uses the information in its solution
+/// ; to calculate the hash of the following and assert it matches the delegated puzzle being validated:
+/// ;
+/// ; (a (q . WRAPPER_MOD) (c (q . WRAPPER) (c delegated_puzzle 1)))
+/// (mod
+///   (
+///     QUOTED_ADD_WRAPPER_MOD_HASH  ; The mod hash of the quoted wrapper add-er i.e. (q . ADD_WRAPPER_MOD)
+///     WRAPPER_STACK  ; The list of wrapper hashes (pre-quoted like above) to be run on the delegated puzzle
+///     delegated_puzzle_hash  ; The hash of the delegated puzzle to validate
+///     inner_most_puzzle_hash  ; hash of the thing being wrapped by all of these puzzles
+///   )
+///
+///   (defconstant TWO 2)
+///   (defconstant SHA_1_NIL 0x4bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459a)
+///   (defconstant SHA_1_1 0x9dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2)
+///   (defconstant SHA_1_C 0xa8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5)
+///   (defconstant SHA_1_A 0xa12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222)
+///   (defconstant SHA_1_&_NIL 0xba4484b961b7a2369d948d06c55b64bdbfaffb326bc13b490ab1215dd33d8d46)
+///
+///   (defun-inline branch_hash (left right)
+///     (sha256 TWO left right)
+///   )
+///
+///   (defun wrap_inner_most_puzzle_hash (QUOTED_ADD_WRAPPER_MOD_HASH WRAPPER_STACK inner_most_puzzle_hash)
+///     (if WRAPPER_STACK
+///         (branch_hash
+///           SHA_1_A
+///           (branch_hash
+///             QUOTED_ADD_WRAPPER_MOD_HASH
+///             (branch_hash
+///               (branch_hash
+///                 SHA_1_C
+///                 (branch_hash
+///                   (f WRAPPER_STACK)
+///                   (branch_hash
+///                     (branch_hash
+///                       SHA_1_C
+///                       (branch_hash
+///                         (branch_hash
+///                           SHA_1_1
+///                           (wrap_inner_most_puzzle_hash QUOTED_ADD_WRAPPER_MOD_HASH (r WRAPPER_STACK) inner_most_puzzle_hash)
+///                         )
+///                         SHA_1_&_NIL
+///                       )
+///                     )
+///                     SHA_1_NIL
+///                   )
+///                 )
+///               )
+///               SHA_1_NIL
+///             )
+///           )
+///         )
+///         inner_most_puzzle_hash
+///     )
+///   )
+///
+///   (if (= delegated_puzzle_hash (wrap_inner_most_puzzle_hash QUOTED_ADD_WRAPPER_MOD_HASH WRAPPER_STACK inner_most_puzzle_hash))
+///       ()
+///       (x)
+///   )
+/// )
+/// ```
+pub const ENFORCE_DPUZ_WRAPPERS: [u8; 363] = hex!("ff02ffff01ff02ffff03ffff09ff17ffff02ff1effff04ff02ffff04ff05ffff04ff0bffff04ff2fff80808080808080ff80ffff01ff088080ff0180ffff04ffff01ffffa0ba4484b961b7a2369d948d06c55b64bdbfaffb326bc13b490ab1215dd33d8d46ffa09dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2a0a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222ffffa0a8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5a04bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459aff02ff02ffff03ff0bffff01ff0bff16ff1cffff0bff16ff05ffff0bff16ffff0bff16ff12ffff0bff16ff13ffff0bff16ffff0bff16ff12ffff0bff16ffff0bff16ff14ffff02ff1effff04ff02ffff04ff05ffff04ff1bffff04ff17ff80808080808080ff088080ff1a808080ff1a808080ffff011780ff0180ff018080");
+pub const ENFORCE_DPUZ_WRAPPERS_HASH: [u8; 32] =
+    hex!("1f94aa2381c1c02fec90687c0b045ef3cad4b458f8eac5bd90695b4d89624f09");
 
 /// ```text
 /// (mod (POOL_PUZZLE_HASH

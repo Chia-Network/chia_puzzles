@@ -242,6 +242,11 @@ chialisp_dictionary = [
         "542cde70d1102cd1b763220990873efc8ab15625ded7eae22cc11e21ef2e2f7c",
     ),
     (
+        "P2_DELEGATED_SINGLETON_MESSAGE",
+        "./puzzles/p2_delegated_singleton_message.clsp.hex",
+        "25fbd0d4586ff8266eb8b0fc4768b7714394d87f87824b0124fc10806ba87bb5",
+    ),
+    (
         "P2_M_OF_N_DELEGATE_DIRECT",
         "./puzzles/p2_m_of_n_delegate_direct.clsp.hex",
         "0f199d5263ac1a62b077c159404a71abd3f9691cc57520bf1d4c5cb501504457",
@@ -297,6 +302,119 @@ chialisp_dictionary = [
         "./puzzles/singleton_top_layer.clsp.hex",
         "24e044101e57b3d8c908b8a38ad57848afd29d3eecc439dba45f4412df4954fd",
     ),
+    # Vault Architecture Puzzles
+    (
+        "VAULT_1_OF_N",
+        "./puzzles/vault_puzzles/architecture_puzzles/1_of_n.clsp.hex",
+        "bcb9aa74893bebcfa2da87271b0330bf2773b6391144ae72262b6824d9c55939",
+    ),
+    (
+        "VAULT_M_OF_N",
+        "./puzzles/vault_puzzles/architecture_puzzles/m_of_n.clsp.hex",
+        "de27deb2ebc7f1e1b77e1d38cc2f9d90fbd54d4b13dd4e6fa1f659177e36ed4f",
+    ),
+    (
+        "VAULT_N_OF_N",
+        "./puzzles/vault_puzzles/architecture_puzzles/n_of_n.clsp.hex",
+        "d4394f50cb1d6ef130788db2e69ab0087ef79b0737179f201c1d1d2a52df1e59",
+    ),
+    (
+        "DELEGATED_PUZZLE_FEEDER",
+        "./puzzles/vault_puzzles/architecture_puzzles/delegated_puzzle_feeder.clsp.hex",
+        "9db33d93853179903d4dd272a00345ee6630dc94907dbcdd96368df6931060fd",
+    ),
+    (
+        "RESTRICTIONS",
+        "./puzzles/vault_puzzles/architecture_puzzles/restrictions.clsp.hex",
+        "a28d59d39f964a93159c986b1914694f6f2f1c9901178f91e8b0ba4045980eef",
+    ),
+    # Vault Member Puzzles
+    (
+        "BLS_MEMBER",
+        "./puzzles/vault_puzzles/member_puzzles/bls_member.clsp.hex",
+        "21a3ae8b3ce64d41ca98d6d8df8f465c9e1bfb19ab40284a5da8479ba7fade78",
+    ),
+    (
+        "BLS_WITH_TAPROOT_MEMBER",
+        "./puzzles/vault_puzzles/member_puzzles/bls_with_taproot_member.clsp.hex",
+        "35d2ad31aaf0df91c965909e5112294c57a18354ee4a5aae80572080ec3b6842",
+    ),
+    (
+        "FIXED_PUZZLE_MEMBER",
+        "./puzzles/vault_puzzles/member_puzzles/fixed_puzzle_member.clsp.hex",
+        "34ede3eadc52ed750e405f2b9dea9891506547f651290bb606356d997c64f219",
+    ),
+    (
+        "PASSKEY_MEMBER_PUZZLE_ASSERT",
+        "./puzzles/vault_puzzles/member_puzzles/passkey_member_puzzle_assert.clsp.hex",
+        "e6db5ba2eeded13c47216512a7a4662b95121c145580db6312cb711aaadcec32",
+    ),
+    (
+        "PASSKEY_MEMBER",
+        "./puzzles/vault_puzzles/member_puzzles/passkey_member.clsp.hex",
+        "1d66225b71ec6caf33e3771ebaa7fcd50826fd31844dc8258116b37b3ff3c7ae",
+    ),
+    (
+        "SECP256K1_MEMBER_PUZZLE_ASSERT",
+        "./puzzles/vault_puzzles/member_puzzles/secp256k1_member_puzzle_assert.clsp.hex",
+        "67d591ffeb00571269d401f41a6a43ceb927b5087074ad4446ff22400a010e87",
+    ),
+    (
+        "SECP256K1_MEMBER",
+        "./puzzles/vault_puzzles/member_puzzles/secp256k1_member.clsp.hex",
+        "2b05daf134c9163acc8f2ac05b61f7d8328fca3dcc963154a28e89bcfc4dbfca",
+    ),
+    (
+        "SECP256R1_MEMBER_PUZZLE_ASSERT",
+        "./puzzles/vault_puzzles/member_puzzles/secp256r1_member_puzzle_assert.clsp.hex",
+        "d77bbc050bff8dfe4eb4544fa2bf0d0fd0463b96801bf6445687bd35985e71db",
+    ),
+    (
+        "SECP256R1_MEMBER",
+        "./puzzles/vault_puzzles/member_puzzles/secp256r1_member.clsp.hex",
+        "05aaa1f2fb6c48b5bce952b09f3da99afa4241989878a9919aafb7d74b70ac54",
+    ),
+    (
+        "SINGLETON_MEMBER",
+        "./puzzles/vault_puzzles/member_puzzles/singleton_member.clsp.hex",
+        "6f1cebc5a6d3661ad87d3558146259ca580729b244b7662757f8d1c34a6a9ad9",
+    ),
+    # Vault Restriction Puzzles
+    (
+        "FORCE_1_OF_2_W_RESTRICTED_VARIABLE",
+        "./puzzles/vault_puzzles/restriction_puzzles/wrappers/force_1_of_2_w_restricted_variable.clsp.hex",
+        "4f7bc8f30deb6dad75a1e29ceacb67fd0fe0eda79173e45295ff2cfbb8de53c6",
+    ),
+    (
+        "FORCE_ASSERT_COIN_ANNOUNCEMENT",
+        "./puzzles/vault_puzzles/restriction_puzzles/wrappers/force_assert_coin_announcement.clsp.hex",
+        "ca0daca027e5ebd4a61fad7e32cfe1e984ad5b561c2fc08dea30accf3a191fab",
+    ),
+    (
+        "FORCE_COIN_MESSAGE",
+        "./puzzles/vault_puzzles/restriction_puzzles/wrappers/force_coin_message.clsp.hex",
+        "9618c96b30b96362f6c01716a11f76c630a786697d5bac92345f5ff90b882268",
+    ),
+    (
+        "RECOVERY",
+        "./puzzles/vault_puzzles/restriction_puzzles/wrappers/recovery.clsp.hex",
+        "8b71805f8e559ab8df3342691d5be28a6e57c541778753598fc88d7591699bd1",
+    ),
+    (
+        "TIMELOCK",
+        "./puzzles/vault_puzzles/restriction_puzzles/wrappers/timelock.clsp.hex",
+        "a6f96d8ecf9bd29e8c41822d231408823707b587bc0d372e5db4ac9733cbea3c",
+    ),
+    (
+        "ADD_DPUZ_WRAPPER",
+        "./puzzles/vault_puzzles/restriction_puzzles/add_dpuz_wrapper.clsp.hex",
+        "6427724905f2dcf8187300ef9a0436a3c96198e4fcd17101d1ded9bc61c3f3bf",
+    ),
+    (
+        "ENFORCE_DPUZ_WRAPPERS",
+        "./puzzles/vault_puzzles/restriction_puzzles/enforce_dpuz_wrappers.clsp.hex",
+        "1f94aa2381c1c02fec90687c0b045ef3cad4b458f8eac5bd90695b4d89624f09",
+    ),
     # Pool Puzzles
     (
         "POOL_MEMBER_INNERPUZ",
@@ -347,6 +465,8 @@ python_dest_path = "./chia_puzzles_py/programs.py"
 os.makedirs(os.path.dirname(rust_dest_path), exist_ok=True)
 os.makedirs(os.path.dirname(python_dest_path), exist_ok=True)
 
+error_count = 0
+
 with open(rust_dest_path, "w") as rust_file, open(python_dest_path, "w") as python_file:
     python_file.write("# Auto-generated Python file with loaded Chialisp constants\n")
     rust_file.write("// Auto-generated Rust file with loaded Chialisp constants\n")
@@ -364,8 +484,8 @@ with open(rust_dest_path, "w") as rust_file, open(python_dest_path, "w") as pyth
     # Create the temp directory referenced below if it doesn't exist
     os.makedirs("puzzles/temp", exist_ok=True)
     temp_file = os.path.join(here, "puzzles/temp/tempfile.clsp.hex")
-    try:
-        for name, file_path, hash in chialisp_dictionary:
+    for name, file_path, hash in chialisp_dictionary:
+        try:
             with open(file_path, "r") as hex_file:
                 hex_data = hex_file.read().strip().replace("\n", "").replace("\r", "")
 
@@ -396,14 +516,16 @@ with open(rust_dest_path, "w") as rust_file, open(python_dest_path, "w") as pyth
                 source = source_file.read().strip()
 
             if temp_hex_data != hex_data:
-                raise ValueError(
-                    f"Compilation of {name} different then checked in hex file"
-                )
+                print(f"Compilation of {name} different then checked in hex file")
+                error_count += 1
+                continue
 
             # Check if the actual treehash of the Program matches the recorded hash
             hash_bytes = generate_hash_bytes(bytes_data)
             if hash_bytes.hex() != hash:
-                raise ValueError(f"Hash mismatch found in: {name}")
+                print(f"Hash mismatch found in '{name}', expected {hash} but found {hash_bytes.hex()}")
+                error_count += 1
+                continue
 
             rust_file.write("\n")
 
@@ -458,10 +580,18 @@ with open(rust_dest_path, "w") as rust_file, open(python_dest_path, "w") as pyth
 
             print(f"Processed {name} from {file_path}")
 
-        print(
-            f"Rust and Python files generated successfully:\n- {rust_dest_path}\n- {python_dest_path}"
-        )
-    except FileNotFoundError:
-        print(f"File not found: {file_path}")
-    except Exception as e:
-        print(e)
+        except FileNotFoundError:
+            print(f"File not found: {file_path}")
+            error_count += 1
+
+        except Exception as e:
+            print(e)
+            error_count += 1
+
+if error_count > 0:
+    print(f"Errors found in {error_count} puzzles")
+    exit(1)
+
+print(
+    f"Rust and Python files generated successfully:\n- {rust_dest_path}\n- {python_dest_path}"
+)
