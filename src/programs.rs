@@ -5334,16 +5334,16 @@ pub const FORCE_COIN_MESSAGE_HASH: [u8; 32] =
 ///
 ///   (defun check_coins (conditions fixed_puzzle_hash)
 ///     (if conditions
-///         (if (any
-///             (= (f (f conditions)) SEND_MESSAGE)
-///             (= (f (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
-///             (= (f (f conditions)) CREATE_COIN_ANNOUNCEMENT)
-///             (and (= (f (f conditions)) CREATE_COIN) (not (= (f (r (f conditions))) fixed_puzzle_hash)))
-///           )
-///             (x)
-///             (check_coins (r conditions) fixed_puzzle_hash)
+///       (if (any
+///           (= (f (f conditions)) SEND_MESSAGE)
+///           (= (f (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
+///           (= (f (f conditions)) CREATE_COIN_ANNOUNCEMENT)
+///           (and (= (f (f conditions)) CREATE_COIN) (not (= (f (r (f conditions))) fixed_puzzle_hash)))
 ///         )
-///         1
+///         (x)
+///         (check_coins (r conditions) fixed_puzzle_hash)
+///       )
+///       1
 ///     )
 ///   )
 ///
