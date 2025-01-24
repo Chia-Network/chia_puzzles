@@ -523,7 +523,9 @@ with open(rust_dest_path, "w") as rust_file, open(python_dest_path, "w") as pyth
             # Check if the actual treehash of the Program matches the recorded hash
             hash_bytes = generate_hash_bytes(bytes_data)
             if hash_bytes.hex() != hash:
-                print(f"Hash mismatch found in '{name}', expected {hash} but found {hash_bytes.hex()}")
+                print(
+                    f"Hash mismatch found in '{name}', expected {hash} but found {hash_bytes.hex()}"
+                )
                 error_count += 1
                 continue
 
