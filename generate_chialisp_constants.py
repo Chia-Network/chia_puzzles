@@ -396,9 +396,29 @@ chialisp_dictionary = [
         "9618c96b30b96362f6c01716a11f76c630a786697d5bac92345f5ff90b882268",
     ),
     (
-        "RECOVERY",
-        "./puzzles/mips_puzzles/restriction_puzzles/wrappers/recovery.clsp.hex",
-        "8b71805f8e559ab8df3342691d5be28a6e57c541778753598fc88d7591699bd1",
+        "PREVENT_CREATE_COIN_ANNOUNCEMENT",
+        "./puzzles/mips_puzzles/restriction_puzzles/wrappers/prevent_create_coin_announcement.clsp.hex",
+        "0e45265e92e6c24634131540b21f42cc77349b989950840e26d606ff30572bfd",
+    ),
+    (
+        "PREVENT_CREATE_PUZZLE_ANNOUNCEMENT",
+        "./puzzles/mips_puzzles/restriction_puzzles/wrappers/prevent_create_puzzle_announcement.clsp.hex",
+        "a23cc560cccf68b00143ba2696ae493855b3b06ee7a9fa44d7f5d239f5c1b5c5",
+    ),
+    (
+        "PREVENT_MULTIPLE_CREATE_COINS",
+        "./puzzles/mips_puzzles/restriction_puzzles/wrappers/prevent_multiple_create_coins.clsp.hex",
+        "93b8c8abeab8f6bdba4acb49ed49362ecba94b703a48b15c8784f966547b7846",
+    ),
+    (
+        "PREVENT_RECEIVE_MESSAGE",
+        "./puzzles/mips_puzzles/restriction_puzzles/wrappers/prevent_receive_message.clsp.hex",
+        "8af9590eb99575e8634983d1f831e0794122b9265413d7f34f9b33b38ce0729c",
+    ),
+    (
+        "PREVENT_SEND_MESSAGE",
+        "./puzzles/mips_puzzles/restriction_puzzles/wrappers/prevent_send_message.clsp.hex",
+        "540ab7f0a30f9c64bd8802f2e472021673f8269d718b830fece2997b3ddb226d",
     ),
     (
         "TIMELOCK",

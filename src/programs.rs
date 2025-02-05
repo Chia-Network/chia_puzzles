@@ -4593,8 +4593,8 @@ pub const SINGLETON_TOP_LAYER_HASH: [u8; 32] =
 ///
 /// )
 /// ```
-pub const VAULT_1_OF_N: [u8; 286] = hex!("ff02ffff01ff02ffff03ffff09ff05ffff02ff06ffff04ff02ffff04ffff0bffff0101ffff02ff04ffff04ff02ffff04ff2fff8080808080ffff04ff17ff808080808080ffff01ff02ff2fffff04ff0bff5f8080ffff01ff088080ff0180ffff04ffff01ffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff04ffff04ff02ffff04ff09ff80808080ffff02ff04ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff02ffff03ff1bffff01ff02ff06ffff04ff02ffff04ffff02ffff03ffff18ffff0101ff1380ffff01ff0bffff0102ff2bff0580ffff01ff0bffff0102ff05ff2b8080ff0180ffff04ffff04ffff17ff13ffff0181ff80ff3b80ff8080808080ffff010580ff0180ff018080");
-pub const VAULT_1_OF_N_HASH: [u8; 32] =
+pub const ONE_OF_N: [u8; 286] = hex!("ff02ffff01ff02ffff03ffff09ff05ffff02ff06ffff04ff02ffff04ffff0bffff0101ffff02ff04ffff04ff02ffff04ff2fff8080808080ffff04ff17ff808080808080ffff01ff02ff2fffff04ff0bff5f8080ffff01ff088080ff0180ffff04ffff01ffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff04ffff04ff02ffff04ff09ff80808080ffff02ff04ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff02ffff03ff1bffff01ff02ff06ffff04ff02ffff04ffff02ffff03ffff18ffff0101ff1380ffff01ff0bffff0102ff2bff0580ffff01ff0bffff0102ff05ff2b8080ff0180ffff04ffff04ffff17ff13ffff0181ff80ff3b80ff8080808080ffff010580ff0180ff018080");
+pub const ONE_OF_N_HASH: [u8; 32] =
     hex!("bcb9aa74893bebcfa2da87271b0330bf2773b6391144ae72262b6824d9c55939");
 
 /// ```text
@@ -4669,8 +4669,8 @@ pub const VAULT_1_OF_N_HASH: [u8; 32] =
 ///   )
 /// )
 /// ```
-pub const VAULT_M_OF_N: [u8; 622] = hex!("ff02ffff01ff02ff16ffff04ff02ffff04ff05ffff04ff0bffff04ffff02ff0cffff04ff02ffff04ff2fffff04ff17ff8080808080ff808080808080ffff04ffff01ffffff02ffff03ffff07ff0580ffff01ff02ff0cffff04ff02ffff04ff05ffff04ff0bff8080808080ffff01ff04ff05ffff01ff80ff80808080ff0180ff02ffff03ff09ffff01ff04ffff0bffff0102ffff05ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff808080808080ffff05ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff80808080808080ffff04ffff02ff0affff04ff02ffff04ffff05ffff06ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff80808080808080ffff04ffff05ffff06ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff80808080808080ff8080808080ffff04ffff10ffff05ffff06ffff06ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff8080808080808080ffff05ffff06ffff06ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff808080808080808080ff80808080ffff01ff04ffff0bffff0101ffff02ff1effff04ff02ffff04ff15ff8080808080ffff04ffff02ff15ffff04ff0bff1d8080ffff01ff0180808080ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ff0affff04ff02ffff04ff0dffff04ff0bff808080808080ffff010b80ff0180ffff02ffff03ffff22ffff09ff05ff81b780ffff09ff0bff278080ffff0157ffff01ff088080ff0180ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff1effff04ff02ffff04ff09ff80808080ffff02ff1effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
-pub const VAULT_M_OF_N_HASH: [u8; 32] =
+pub const M_OF_N: [u8; 622] = hex!("ff02ffff01ff02ff16ffff04ff02ffff04ff05ffff04ff0bffff04ffff02ff0cffff04ff02ffff04ff2fffff04ff17ff8080808080ff808080808080ffff04ffff01ffffff02ffff03ffff07ff0580ffff01ff02ff0cffff04ff02ffff04ff05ffff04ff0bff8080808080ffff01ff04ff05ffff01ff80ff80808080ff0180ff02ffff03ff09ffff01ff04ffff0bffff0102ffff05ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff808080808080ffff05ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff80808080808080ffff04ffff02ff0affff04ff02ffff04ffff05ffff06ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff80808080808080ffff04ffff05ffff06ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff80808080808080ff8080808080ffff04ffff10ffff05ffff06ffff06ffff02ff08ffff04ff02ffff04ff09ffff04ff0bff8080808080808080ffff05ffff06ffff06ffff02ff08ffff04ff02ffff04ff0dffff04ff0bff808080808080808080ff80808080ffff01ff04ffff0bffff0101ffff02ff1effff04ff02ffff04ff15ff8080808080ffff04ffff02ff15ffff04ff0bff1d8080ffff01ff0180808080ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ff0affff04ff02ffff04ff0dffff04ff0bff808080808080ffff010b80ff0180ffff02ffff03ffff22ffff09ff05ff81b780ffff09ff0bff278080ffff0157ffff01ff088080ff0180ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff1effff04ff02ffff04ff09ff80808080ffff02ff1effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const M_OF_N_HASH: [u8; 32] =
     hex!("de27deb2ebc7f1e1b77e1d38cc2f9d90fbd54d4b13dd4e6fa1f659177e36ed4f");
 
 /// ```text
@@ -4709,8 +4709,8 @@ pub const VAULT_M_OF_N_HASH: [u8; 32] =
 ///   (approve_delegated_puzzle MEMBERS member_solutions delegated_puzzle_hash)
 /// )
 /// ```
-pub const VAULT_N_OF_N: [u8; 243] = hex!("ff02ffff01ff02ff04ffff04ff02ffff04ff05ffff04ff17ffff04ff0bff808080808080ffff04ffff01ffff02ffff03ff0dffff01ff02ff0affff04ff02ffff04ffff02ff0effff04ff02ffff04ff09ffff04ff13ffff04ff17ff808080808080ffff04ffff02ff04ffff04ff02ffff04ff0dffff04ff1bffff04ff17ff808080808080ff8080808080ffff01ff02ff0effff04ff02ffff04ff09ffff04ff13ffff04ff17ff80808080808080ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ff0affff04ff02ffff04ff0dffff04ff0bff808080808080ffff010b80ff0180ff02ff05ffff04ff17ff0b8080ff018080");
-pub const VAULT_N_OF_N_HASH: [u8; 32] =
+pub const N_OF_N: [u8; 243] = hex!("ff02ffff01ff02ff04ffff04ff02ffff04ff05ffff04ff17ffff04ff0bff808080808080ffff04ffff01ffff02ffff03ff0dffff01ff02ff0affff04ff02ffff04ffff02ff0effff04ff02ffff04ff09ffff04ff13ffff04ff17ff808080808080ffff04ffff02ff04ffff04ff02ffff04ff0dffff04ff1bffff04ff17ff808080808080ff8080808080ffff01ff02ff0effff04ff02ffff04ff09ffff04ff13ffff04ff17ff80808080808080ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ff0affff04ff02ffff04ff0dffff04ff0bff808080808080ffff010b80ff0180ff02ff05ffff04ff17ff0b8080ff018080");
+pub const N_OF_N_HASH: [u8; 32] =
     hex!("d4394f50cb1d6ef130788db2e69ab0087ef79b0737179f201c1d1d2a52df1e59");
 
 /// ```text
@@ -5307,104 +5307,117 @@ pub const FORCE_COIN_MESSAGE_HASH: [u8; 32] =
     hex!("9618c96b30b96362f6c01716a11f76c630a786697d5bac92345f5ff90b882268");
 
 /// ```text
-/// ; This is a highly specific puzzle that enforces that any new create coins are a 1of2 w/ a fixed left side
-/// ; and a variable right side that is put under pre-committed restrictions.
-/// ;
-/// ; The framework this is designed to fit in doesn't really support subtree behavior like this, so the specificity and
-/// ; limited flexibility of this puzzle is due to the fact that it's sort of a hack to support an existing feature with
-/// ; a framework poorly designed for it.
-/// (mod
-///   (
-///     DELEGATED_PUZZLE_FEEDER_MOD_HASH
-///     1_OF_N_MOD_HASH
-///     LEFT_SIDE_SUBTREE_HASH_HASH
-///     INDEX_WRAPPER_HASH
-///     NONCE
-///     RESTRICTION_MOD_HASH
-///     MEMBER_VALIDATOR_LIST_HASH
-///     DPUZ_VALIDATOR_LIST_HASH
-///     Conditions
-///     new_right_side_member_hash
-///   )
-///
-///   (include curry.clib)
+/// (mod (Conditions)
 ///   (include utility_macros.clib)
 ///   (include condition_codes.clib)
-///   (defconstant ONE 1)
 ///
-///   (defun check_coins (conditions fixed_puzzle_hash)
+///   (defun check_coins (conditions)
 ///     (if conditions
-///       (if (any
-///           (= (f (f conditions)) SEND_MESSAGE)
-///           (= (f (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
-///           (= (f (f conditions)) CREATE_COIN_ANNOUNCEMENT)
-///           (and (= (f (f conditions)) CREATE_COIN) (not (= (f (r (f conditions))) fixed_puzzle_hash)))
-///         )
+///       (if (= (f (f conditions)) CREATE_COIN_ANNOUNCEMENT)
 ///         (x)
-///         (check_coins (r conditions) fixed_puzzle_hash)
+///         (check_coins (r conditions))
 ///       )
 ///       1
 ///     )
 ///   )
 ///
-///   (defun-inline calculate_fixed_puzzle_hash
-///     (
-///       DELEGATED_PUZZLE_FEEDER_MOD_HASH
-///       1_OF_N_MOD_HASH
-///       LEFT_SIDE_SUBTREE_HASH_HASH
-///       INDEX_WRAPPER_HASH
-///       NONCE
-///       RESTRICTION_MOD_HASH
-///       MEMBER_VALIDATOR_LIST_HASH
-///       DPUZ_VALIDATOR_LIST_HASH
-///       new_right_side_member_hash
-///     )
-///
-///
-///     (curry_hashes INDEX_WRAPPER_HASH
-///       (sha256 ONE NONCE)
-///       (curry_hashes DELEGATED_PUZZLE_FEEDER_MOD_HASH
-///         (curry_hashes 1_OF_N_MOD_HASH
-///           (sha256 ONE (sha256 TWO
-///               LEFT_SIDE_SUBTREE_HASH_HASH
-///               ; right side calculation
-///               (sha256 ONE (curry_hashes INDEX_WRAPPER_HASH
-///                   (sha256 ONE NONCE)
-///                   (curry_hashes RESTRICTION_MOD_HASH
-///                     MEMBER_VALIDATOR_LIST_HASH
-///                     DPUZ_VALIDATOR_LIST_HASH
-///                     new_right_side_member_hash
-///                   )
-///               ))
-///           ))
-///         )
-///       )
-///     )
-///   )
-///
-///   (assert
-///     (check_coins
-///       Conditions
-///       (calculate_fixed_puzzle_hash
-///         DELEGATED_PUZZLE_FEEDER_MOD_HASH
-///         1_OF_N_MOD_HASH
-///         LEFT_SIDE_SUBTREE_HASH_HASH
-///         INDEX_WRAPPER_HASH
-///         NONCE
-///         RESTRICTION_MOD_HASH
-///         MEMBER_VALIDATOR_LIST_HASH
-///         DPUZ_VALIDATOR_LIST_HASH
-///         new_right_side_member_hash
-///       )
-///     )
-///     ; then
-///     Conditions
-///   )
+///   (assert (check_coins Conditions) Conditions)
 /// )
 /// ```
-pub const RECOVERY: [u8; 684] = hex!("ff02ffff01ff02ffff03ffff02ff3affff04ff02ffff04ff8205ffffff04ffff02ff2effff04ff02ffff04ff2fffff04ffff0bff2cff5f80ffff04ffff02ff2effff04ff02ffff04ff05ffff04ffff02ff2effff04ff02ffff04ff0bffff04ffff0bff2cffff0bff12ff17ffff0bff2cffff02ff2effff04ff02ffff04ff2fffff04ffff0bff2cff5f80ffff04ffff02ff2effff04ff02ffff04ff81bfffff04ff82017fffff04ff8202ffffff04ff820bffff80808080808080ff808080808080808080ff8080808080ff8080808080ff808080808080ff8080808080ffff018205ffffff01ff088080ff0180ffff04ffff01ffffff333cff3eff0142ffff02ffff02ffff03ff05ffff01ff0bff76ffff02ff3effff04ff02ffff04ff09ffff04ffff02ff2affff04ff02ffff04ff0dff80808080ff808080808080ffff016680ff0180ff02ffff03ff05ffff01ff02ffff03ffff21ffff09ff11ff3c80ffff09ff11ff1480ffff09ff11ff1880ffff02ffff03ffff09ff11ff1080ffff01ff02ffff03ffff20ffff09ff29ff0b8080ffff01ff0101ff8080ff0180ff8080ff018080ffff01ff0880ffff01ff02ff3affff04ff02ffff04ff0dffff04ff0bff808080808080ff0180ffff01ff010180ff0180ffffffa04bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459aa09dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2ffa102a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222a102a8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5ffff0bff56ffff02ff3effff04ff02ffff04ff05ffff04ffff02ff2affff04ff02ffff04ff07ff80808080ff808080808080ff0bff12ffff0bff12ff66ff0580ffff0bff12ff0bff468080ff018080");
-pub const RECOVERY_HASH: [u8; 32] =
-    hex!("8b71805f8e559ab8df3342691d5be28a6e57c541778753598fc88d7591699bd1");
+pub const PREVENT_CREATE_COIN_ANNOUNCEMENT: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff3cff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
+pub const PREVENT_CREATE_COIN_ANNOUNCEMENT_HASH: [u8; 32] =
+    hex!("0e45265e92e6c24634131540b21f42cc77349b989950840e26d606ff30572bfd");
+
+/// ```text
+/// (mod (Conditions)
+///   (include utility_macros.clib)
+///   (include condition_codes.clib)
+///
+///   (defun check_coins (conditions)
+///     (if conditions
+///       (if (= (f (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
+///         (x)
+///         (check_coins (r conditions))
+///       )
+///       1
+///     )
+///   )
+///
+///   (assert (check_coins Conditions) Conditions)
+/// )
+/// ```
+pub const PREVENT_CREATE_PUZZLE_ANNOUNCEMENT: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff3eff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
+pub const PREVENT_CREATE_PUZZLE_ANNOUNCEMENT_HASH: [u8; 32] =
+    hex!("a23cc560cccf68b00143ba2696ae493855b3b06ee7a9fa44d7f5d239f5c1b5c5");
+
+/// ```text
+/// (mod (Conditions)
+///   (include utility_macros.clib)
+///   (include condition_codes.clib)
+///
+///   (defun check_coins (conditions count)
+///     (if conditions
+///       (check_coins
+///         (r conditions)
+///         (if (= (f (f conditions)) CREATE_COIN)
+///           (+ count 1)
+///           count
+///         )
+///       )
+///       count
+///     )
+///   )
+///
+///   (assert (= (check_coins Conditions 0) 1) Conditions)
+/// )
+/// ```
+pub const PREVENT_MULTIPLE_CREATE_COINS: [u8; 143] = hex!("ff02ffff01ff02ffff03ffff09ffff02ff06ffff04ff02ffff04ff05ffff01ff8080808080ffff010180ffff0105ffff01ff088080ff0180ffff04ffff01ff33ff02ffff03ff05ffff01ff02ff06ffff04ff02ffff04ff0dffff04ffff02ffff03ffff09ff11ff0480ffff01ff10ff0bffff010180ffff010b80ff0180ff8080808080ffff010b80ff0180ff018080");
+pub const PREVENT_MULTIPLE_CREATE_COINS_HASH: [u8; 32] =
+    hex!("93b8c8abeab8f6bdba4acb49ed49362ecba94b703a48b15c8784f966547b7846");
+
+/// ```text
+/// (mod (Conditions)
+///   (include utility_macros.clib)
+///   (include condition_codes.clib)
+///
+///   (defun check_coins (conditions)
+///     (if conditions
+///       (if (= (f (f conditions)) RECEIVE_MESSAGE)
+///         (x)
+///         (check_coins (r conditions))
+///       )
+///       1
+///     )
+///   )
+///
+///   (assert (check_coins Conditions) Conditions)
+/// )
+/// ```
+pub const PREVENT_RECEIVE_MESSAGE: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff43ff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
+pub const PREVENT_RECEIVE_MESSAGE_HASH: [u8; 32] =
+    hex!("8af9590eb99575e8634983d1f831e0794122b9265413d7f34f9b33b38ce0729c");
+
+/// ```text
+/// (mod (Conditions)
+///   (include utility_macros.clib)
+///   (include condition_codes.clib)
+///
+///   (defun check_coins (conditions)
+///     (if conditions
+///       (if (= (f (f conditions)) SEND_MESSAGE)
+///         (x)
+///         (check_coins (r conditions))
+///       )
+///       1
+///     )
+///   )
+///
+///   (assert (check_coins Conditions) Conditions)
+/// )
+/// ```
+pub const PREVENT_SEND_MESSAGE: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff42ff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
+pub const PREVENT_SEND_MESSAGE_HASH: [u8; 32] =
+    hex!("540ab7f0a30f9c64bd8802f2e472021673f8269d718b830fece2997b3ddb226d");
 
 /// ```text
 /// (mod
