@@ -393,7 +393,7 @@ chialisp_dictionary = [
     (
         "PREVENT_CONDITION_OPCODE",
         "./puzzles/mips_puzzles/restriction_puzzles/wrappers/prevent_condition_opcode.clsp.hex",
-        "a2e614754cd3cba865f8a1aa08a1071537982488d487cf8fca0e0402a4aa6c04",
+        "046dfa794bb1df14d5dc891b23764a0e31f119546d2c56cdc8df0d31daaa555f",
     ),
     (
         "PREVENT_MULTIPLE_CREATE_COINS",

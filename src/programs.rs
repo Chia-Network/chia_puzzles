@@ -5277,7 +5277,7 @@ pub const FORCE_COIN_MESSAGE_HASH: [u8; 32] =
 ///     (if conditions
 ///       (if (= (f (f conditions)) CONDITION_OPCODE)
 ///         (x)
-///         (check_coins (r conditions))
+///         (check_coins CONDITION_OPCODE (r conditions))
 ///       )
 ///       1
 ///     )
@@ -5286,9 +5286,9 @@ pub const FORCE_COIN_MESSAGE_HASH: [u8; 32] =
 ///   (assert (check_coins CONDITION_OPCODE Conditions) Conditions)
 /// )
 /// ```
-pub const PREVENT_CONDITION_OPCODE: [u8; 125] = hex!("ff02ffff01ff02ffff03ffff02ff02ffff04ff02ffff04ff05ffff04ff0bff8080808080ffff010bffff01ff088080ff0180ffff04ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff23ff0580ffff01ff0880ffff01ff02ff02ffff04ff02ffff04ff1bff8080808080ff0180ffff01ff010180ff0180ff018080");
+pub const PREVENT_CONDITION_OPCODE: [u8; 131] = hex!("ff02ffff01ff02ffff03ffff02ff02ffff04ff02ffff04ff05ffff04ff0bff8080808080ffff010bffff01ff088080ff0180ffff04ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff23ff0580ffff01ff0880ffff01ff02ff02ffff04ff02ffff04ff05ffff04ff1bff808080808080ff0180ffff01ff010180ff0180ff018080");
 pub const PREVENT_CONDITION_OPCODE_HASH: [u8; 32] =
-    hex!("a2e614754cd3cba865f8a1aa08a1071537982488d487cf8fca0e0402a4aa6c04");
+    hex!("046dfa794bb1df14d5dc891b23764a0e31f119546d2c56cdc8df0d31daaa555f");
 
 /// ```text
 /// (mod (Conditions)

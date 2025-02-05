@@ -5,7 +5,7 @@
     (if conditions
       (if (= (f (f conditions)) CONDITION_OPCODE)
         (x)
-        (check_coins (r conditions))
+        (check_coins CONDITION_OPCODE (r conditions))
       )
       1
     )
