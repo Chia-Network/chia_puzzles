@@ -5270,13 +5270,12 @@ pub const FORCE_COIN_MESSAGE_HASH: [u8; 32] =
     hex!("9618c96b30b96362f6c01716a11f76c630a786697d5bac92345f5ff90b882268");
 
 /// ```text
-/// (mod (Conditions)
+/// (mod (CONDITION_OPCODE Conditions)
 ///   (include utility_macros.clib)
-///   (include condition_codes.clib)
 ///
-///   (defun check_coins (conditions)
+///   (defun check_coins (CONDITION_OPCODE conditions)
 ///     (if conditions
-///       (if (= (f (f conditions)) CREATE_COIN_ANNOUNCEMENT)
+///       (if (= (f (f conditions)) CONDITION_OPCODE)
 ///         (x)
 ///         (check_coins (r conditions))
 ///       )
@@ -5284,34 +5283,12 @@ pub const FORCE_COIN_MESSAGE_HASH: [u8; 32] =
 ///     )
 ///   )
 ///
-///   (assert (check_coins Conditions) Conditions)
+///   (assert (check_coins CONDITION_OPCODE Conditions) Conditions)
 /// )
 /// ```
-pub const PREVENT_CREATE_COIN_ANNOUNCEMENT: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff3cff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
-pub const PREVENT_CREATE_COIN_ANNOUNCEMENT_HASH: [u8; 32] =
-    hex!("0e45265e92e6c24634131540b21f42cc77349b989950840e26d606ff30572bfd");
-
-/// ```text
-/// (mod (Conditions)
-///   (include utility_macros.clib)
-///   (include condition_codes.clib)
-///
-///   (defun check_coins (conditions)
-///     (if conditions
-///       (if (= (f (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
-///         (x)
-///         (check_coins (r conditions))
-///       )
-///       1
-///     )
-///   )
-///
-///   (assert (check_coins Conditions) Conditions)
-/// )
-/// ```
-pub const PREVENT_CREATE_PUZZLE_ANNOUNCEMENT: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff3eff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
-pub const PREVENT_CREATE_PUZZLE_ANNOUNCEMENT_HASH: [u8; 32] =
-    hex!("a23cc560cccf68b00143ba2696ae493855b3b06ee7a9fa44d7f5d239f5c1b5c5");
+pub const PREVENT_CONDITION_OPCODE: [u8; 125] = hex!("ff02ffff01ff02ffff03ffff02ff02ffff04ff02ffff04ff05ffff04ff0bff8080808080ffff010bffff01ff088080ff0180ffff04ffff01ff02ffff03ff0bffff01ff02ffff03ffff09ff23ff0580ffff01ff0880ffff01ff02ff02ffff04ff02ffff04ff1bff8080808080ff0180ffff01ff010180ff0180ff018080");
+pub const PREVENT_CONDITION_OPCODE_HASH: [u8; 32] =
+    hex!("a2e614754cd3cba865f8a1aa08a1071537982488d487cf8fca0e0402a4aa6c04");
 
 /// ```text
 /// (mod (Conditions)
@@ -5337,50 +5314,6 @@ pub const PREVENT_CREATE_PUZZLE_ANNOUNCEMENT_HASH: [u8; 32] =
 pub const PREVENT_MULTIPLE_CREATE_COINS: [u8; 143] = hex!("ff02ffff01ff02ffff03ffff09ffff02ff06ffff04ff02ffff04ff05ffff01ff8080808080ffff010180ffff0105ffff01ff088080ff0180ffff04ffff01ff33ff02ffff03ff05ffff01ff02ff06ffff04ff02ffff04ff0dffff04ffff02ffff03ffff09ff11ff0480ffff01ff10ff0bffff010180ffff010b80ff0180ff8080808080ffff010b80ff0180ff018080");
 pub const PREVENT_MULTIPLE_CREATE_COINS_HASH: [u8; 32] =
     hex!("93b8c8abeab8f6bdba4acb49ed49362ecba94b703a48b15c8784f966547b7846");
-
-/// ```text
-/// (mod (Conditions)
-///   (include utility_macros.clib)
-///   (include condition_codes.clib)
-///
-///   (defun check_coins (conditions)
-///     (if conditions
-///       (if (= (f (f conditions)) RECEIVE_MESSAGE)
-///         (x)
-///         (check_coins (r conditions))
-///       )
-///       1
-///     )
-///   )
-///
-///   (assert (check_coins Conditions) Conditions)
-/// )
-/// ```
-pub const PREVENT_RECEIVE_MESSAGE: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff43ff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
-pub const PREVENT_RECEIVE_MESSAGE_HASH: [u8; 32] =
-    hex!("8af9590eb99575e8634983d1f831e0794122b9265413d7f34f9b33b38ce0729c");
-
-/// ```text
-/// (mod (Conditions)
-///   (include utility_macros.clib)
-///   (include condition_codes.clib)
-///
-///   (defun check_coins (conditions)
-///     (if conditions
-///       (if (= (f (f conditions)) SEND_MESSAGE)
-///         (x)
-///         (check_coins (r conditions))
-///       )
-///       1
-///     )
-///   )
-///
-///   (assert (check_coins Conditions) Conditions)
-/// )
-/// ```
-pub const PREVENT_SEND_MESSAGE: [u8; 121] = hex!("ff02ffff01ff02ffff03ffff02ff06ffff04ff02ffff04ff05ff80808080ffff0105ffff01ff088080ff0180ffff04ffff01ff42ff02ffff03ff05ffff01ff02ffff03ffff09ff11ff0480ffff01ff0880ffff01ff02ff06ffff04ff02ffff04ff0dff8080808080ff0180ffff01ff010180ff0180ff018080");
-pub const PREVENT_SEND_MESSAGE_HASH: [u8; 32] =
-    hex!("540ab7f0a30f9c64bd8802f2e472021673f8269d718b830fece2997b3ddb226d");
 
 /// ```text
 /// (mod
