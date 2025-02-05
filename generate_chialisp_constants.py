@@ -242,11 +242,6 @@ chialisp_dictionary = [
         "542cde70d1102cd1b763220990873efc8ab15625ded7eae22cc11e21ef2e2f7c",
     ),
     (
-        "P2_DELEGATED_SINGLETON_MESSAGE",
-        "./puzzles/p2_delegated_singleton_message.clsp.hex",
-        "25fbd0d4586ff8266eb8b0fc4768b7714394d87f87824b0124fc10806ba87bb5",
-    ),
-    (
         "P2_M_OF_N_DELEGATE_DIRECT",
         "./puzzles/p2_m_of_n_delegate_direct.clsp.hex",
         "0f199d5263ac1a62b077c159404a71abd3f9691cc57520bf1d4c5cb501504457",

@@ -3764,43 +3764,6 @@ pub const P2_DELEGATED_PUZZLE_HASH: [u8; 32] =
     hex!("542cde70d1102cd1b763220990873efc8ab15625ded7eae22cc11e21ef2e2f7c");
 
 /// ```text
-/// ; This puzzle is used to delegate a spend to a singleton.
-/// ; The singleton will authorize the spend by sending a message via the SEND_MESSAGE condition.
-/// (mod (
-///     SINGLETON_MOD_HASH
-///     SINGLETON_STRUCT_HASH ; The hash of (SINGLETON_MOD_HASH . (LAUNCHER_ID . SINGLETON_LAUNCHER_HASH))
-///     NONCE
-///     singleton_inner_puzzle_hash
-///     delegated_puzzle
-///     delegated_solution
-///   )
-///
-///   (include condition_codes.clib)
-///   (include curry.clib)
-///   (include sha256tree.clib)
-///
-///   (defun-inline calculate_full_puzzle_hash (SINGLETON_MOD_HASH SINGLETON_STRUCT_HASH inner_puzzle_hash)
-///     (curry_hashes_inline SINGLETON_MOD_HASH
-///       SINGLETON_STRUCT_HASH
-///       inner_puzzle_hash
-///     )
-///   )
-///
-///   (c
-///     (list RECEIVE_MESSAGE
-///       23 ; = 010 111, mask for puzzle hash to coin ID
-///       (sha256tree delegated_puzzle)
-///       (calculate_full_puzzle_hash SINGLETON_MOD_HASH SINGLETON_STRUCT_HASH singleton_inner_puzzle_hash)
-///     )
-///     (a delegated_puzzle delegated_solution)
-///   )
-/// )
-/// ```
-pub const P2_DELEGATED_SINGLETON_MESSAGE: [u8; 382] = hex!("ff02ffff01ff04ffff04ff08ffff04ffff0117ffff04ffff02ff0effff04ff02ffff04ff5fff80808080ffff04ffff0bff2affff0bff0cffff0bff0cff32ff0580ffff0bff0cffff0bff3affff0bff0cffff0bff0cff32ff0b80ffff0bff0cffff0bff3affff0bff0cffff0bff0cff32ff2f80ffff0bff0cff32ff22808080ff22808080ff22808080ff8080808080ffff02ff5fff81bf8080ffff04ffff01ffff4302ffffffa04bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459aa09dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2ffa102a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222a102a8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff0effff04ff02ffff04ff09ff80808080ffff02ff0effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
-pub const P2_DELEGATED_SINGLETON_MESSAGE_HASH: [u8; 32] =
-    hex!("25fbd0d4586ff8266eb8b0fc4768b7714394d87f87824b0124fc10806ba87bb5");
-
-/// ```text
 /// ; build an M of N multisig puzzle
 /// ; coins are locked by N public keys, any M of which can delegate a sub-puzzle
 ///
