@@ -5179,7 +5179,7 @@ pub const SINGLETON_MEMBER_HASH: [u8; 32] =
 ///   (defun check_coins (conditions fixed_puzzle_hash)
 ///     (if conditions
 ///         (if (and (= (f (f conditions)) CREATE_COIN) (not (= (f (r (f conditions))) fixed_puzzle_hash)))
-///             (x)  ; (f (r (f conditions))) fixed_puzzle_hash)
+///             (x)
 ///             (check_coins (r conditions) fixed_puzzle_hash)
 ///         )
 ///         1  ; this will pass assert
