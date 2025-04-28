@@ -10,7 +10,12 @@ from chia_puzzles_py.manage_clvm import generate_hash_bytes
 chialisp_dictionary = [
     # CAT Puzzles
     (
-        "CAT_PUZZLE",
+        "CAT_PUZZLE_V1",
+        "./puzzles/cat_puzzles/cat_v1.clsp.hex",
+        "72dec062874cd4d3aab892a0906688a1ae412b0109982e1797a170add88bdcdc",
+    ),
+    (
+        "CAT_PUZZLE_V2",
         "./puzzles/cat_puzzles/cat_v2.clsp.hex",
         "37bef360ee858133b69d595a906dc45d01af50379dad515eb9518abb7c1d2a7a",
     ),
@@ -277,8 +282,13 @@ chialisp_dictionary = [
         "13e29a62b42cd2ef72a79e4bacdc59733ca6310d65af83d349360d36ec622363",
     ),
     (
-        "SETTLEMENT_PAYMENT",
-        "./puzzles/settlement_payments.clsp.hex",
+        "SETTLEMENT_PAYMENT_V1",
+        "./puzzles/settlement_payments_v1.clsp.hex",
+        "bae24162efbd568f89bc7a340798a6118df0189eb9e3f8697bcea27af99f8f79",
+    ),
+    (
+        "SETTLEMENT_PAYMENT_V2",
+        "./puzzles/settlement_payments_v2.clsp.hex",
         "cfbfdeed5c4ca2de3d0bf520b9cb4bb7743a359bd2e6a188d19ce7dffc21d3e7",
     ),
     # Singleton Puzzles
@@ -403,7 +413,9 @@ with open(rust_dest_path, "w") as rust_file, open(python_dest_path, "w") as pyth
             # Check if the actual treehash of the Program matches the recorded hash
             hash_bytes = generate_hash_bytes(bytes_data)
             if hash_bytes.hex() != hash:
-                raise ValueError(f"Hash mismatch found in: {name}")
+                raise ValueError(
+                    f"Hash mismatch found for {name}, expected {hash}, got {hash_bytes.hex()}"
+                )
 
             rust_file.write("\n")
 
