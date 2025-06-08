@@ -303,8 +303,8 @@ chialisp_dictionary = [
         "24e044101e57b3d8c908b8a38ad57848afd29d3eecc439dba45f4412df4954fd",
     ),
     (
-        "SINGLETON_TOP_LAYER_V2",
-        "./puzzles/singleton_top_layer_v2.clsp.hex",
+        "SINGLETON_TOP_LAYER_V1_1",
+        "./puzzles/singleton_top_layer_v1_1.clsp.hex",
         "7faa3253bfddd1e0decb0906b2dc6247bbc4cf608f58345d173adb63e8b47c9f",
     ),
     # Pool Puzzles
