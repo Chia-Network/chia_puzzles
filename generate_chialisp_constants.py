@@ -10,12 +10,12 @@ from chia_puzzles_py.manage_clvm import generate_hash_bytes
 chialisp_dictionary = [
     # CAT Puzzles
     (
-        "CAT_PUZZLE_V1",
+        "CAT_V1",
         "./puzzles/cat_puzzles/cat_v1.clsp.hex",
         "72dec062874cd4d3aab892a0906688a1ae412b0109982e1797a170add88bdcdc",
     ),
     (
-        "CAT_PUZZLE_V2",
+        "CAT_V2",
         "./puzzles/cat_puzzles/cat_v2.clsp.hex",
         "37bef360ee858133b69d595a906dc45d01af50379dad515eb9518abb7c1d2a7a",
     ),
@@ -282,12 +282,12 @@ chialisp_dictionary = [
         "13e29a62b42cd2ef72a79e4bacdc59733ca6310d65af83d349360d36ec622363",
     ),
     (
-        "SETTLEMENT_PAYMENT_V1",
+        "SETTLEMENT_PAYMENTS_V1",
         "./puzzles/settlement_payments_v1.clsp.hex",
         "bae24162efbd568f89bc7a340798a6118df0189eb9e3f8697bcea27af99f8f79",
     ),
     (
-        "SETTLEMENT_PAYMENT_V2",
+        "SETTLEMENT_PAYMENTS_V2",
         "./puzzles/settlement_payments_v2.clsp.hex",
         "cfbfdeed5c4ca2de3d0bf520b9cb4bb7743a359bd2e6a188d19ce7dffc21d3e7",
     ),
@@ -298,14 +298,14 @@ chialisp_dictionary = [
         "eff07522495060c066f66f32acc2a77e3a3e737aca8baea4d1a64ea4cdc13da9",
     ),
     (
-        "SINGLETON_TOP_LAYER_V1_1",
-        "./puzzles/singleton_top_layer_v1_1.clsp.hex",
-        "7faa3253bfddd1e0decb0906b2dc6247bbc4cf608f58345d173adb63e8b47c9f",
+        "SINGLETON_TOP_LAYER_V1",
+        "./puzzles/singleton_top_layer_v1.clsp.hex",
+        "24e044101e57b3d8c908b8a38ad57848afd29d3eecc439dba45f4412df4954fd",
     ),
     (
-        "SINGLETON_TOP_LAYER",
-        "./puzzles/singleton_top_layer.clsp.hex",
-        "24e044101e57b3d8c908b8a38ad57848afd29d3eecc439dba45f4412df4954fd",
+        "SINGLETON_TOP_LAYER_V2",
+        "./puzzles/singleton_top_layer_v2.clsp.hex",
+        "7faa3253bfddd1e0decb0906b2dc6247bbc4cf608f58345d173adb63e8b47c9f",
     ),
     # Pool Puzzles
     (
