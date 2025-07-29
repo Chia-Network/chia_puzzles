@@ -1,4 +1,5 @@
 #[cfg(test)]
+#[allow(clippy::module_inception)]
 mod tests {
     use crate::programs::{CAT_PUZZLE, SINGLETON_TOP_LAYER};
     #[test]
