@@ -25,6 +25,11 @@ chialisp_dictionary = [
         "1720d13250a7c16988eaf530331cefa9dd57a76b2c82236bec8bbbff91499b89",
     ),
     (
+        "EVERYTHING_WITH_SINGLETON",
+        "./puzzles/cat_puzzles/everything_with_singleton.clsp.hex",
+        "0876da2005fe6262d4504c27a1b6379227aba8adbbad3758cb0e329a4e74c6cc",
+    ),
+    (
         "GENESIS_BY_COIN_ID_OR_SINGLETON",
         "./puzzles/cat_puzzles/genesis_by_coin_id_or_singleton.clsp.hex",
         "40170305e3a71c3e7523f37fbcfc3188f9f949da0818a6331f28251e76e8c56f",
