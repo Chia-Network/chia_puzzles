@@ -460,6 +460,46 @@ pub const EVERYTHING_WITH_SIGNATURE_HASH: [u8; 32] =
     hex!("1720d13250a7c16988eaf530331cefa9dd57a76b2c82236bec8bbbff91499b89");
 
 /// ```text
+/// ; This is a "limitations_program" for use with cat.clsp.
+/// ; It allows a singleton to both mint and melt this CAT by sending a message.
+/// (mod (
+///     SINGLETON_MOD_HASH
+///     SINGLETON_STRUCT_HASH ; The hash of (SINGLETON_MOD_HASH . (LAUNCHER_ID . SINGLETON_LAUNCHER_HASH))
+///     NONCE
+///     Truths
+///     parent_is_cat
+///     lineage_proof
+///     delta
+///     inner_conditions
+///     (  ; solution
+///       singleton_inner_puzzle_hash
+///     )
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry.clib)
+///
+///   (defun-inline calculate_full_puzzle_hash (SINGLETON_MOD_HASH SINGLETON_STRUCT_HASH inner_puzzle_hash)
+///     (curry_hashes_inline SINGLETON_MOD_HASH
+///       SINGLETON_STRUCT_HASH
+///       inner_puzzle_hash
+///     )
+///   )
+///
+///   (list
+///     (list RECEIVE_MESSAGE
+///       23 ; = 010 111, mask for puzzle hash to coin ID
+///       delta
+///       (calculate_full_puzzle_hash SINGLETON_MOD_HASH SINGLETON_STRUCT_HASH singleton_inner_puzzle_hash)
+///     )
+///   )
+/// )
+/// ```
+pub const EVERYTHING_WITH_SINGLETON: [u8; 283] = hex!("ff02ffff01ff04ffff04ff04ffff04ffff0117ffff04ff82017fffff04ffff0bff2effff0bff0affff0bff0aff36ff0580ffff0bff0affff0bff3effff0bff0affff0bff0aff36ff0b80ffff0bff0affff0bff3effff0bff0affff0bff0aff36ff8209ff80ffff0bff0aff36ff26808080ff26808080ff26808080ff8080808080ff8080ffff04ffff01ff43ff02ffffa04bf5122f344554c53bde2ebb8cd2b7e3d1600ad631c385a5d7cce23c7785459aa09dcf97a184f32623d11a73124ceb99a5709b083721e878a16d78f596718ba7b2ffa102a12871fee210fb8619291eaea194581cbd2531e4b23759d225f6806923f63222a102a8d5dd63fba471ebcb1f3e8f7c1e1879b7152a6e7298a91ce119a63400ade7c5ff018080");
+pub const EVERYTHING_WITH_SINGLETON_HASH: [u8; 32] =
+    hex!("0876da2005fe6262d4504c27a1b6379227aba8adbbad3758cb0e329a4e74c6cc");
+
+/// ```text
 /// ; This is a TAIL for use with cat.clvm.
 /// ;
 /// ; This checker allows new CATs to be created if they have a particular coin id as parent
