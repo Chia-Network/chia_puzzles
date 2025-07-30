@@ -1,8 +1,0 @@
-LICENSE
-README.md
-pyproject.toml
-src/chia_puzzles.egg-info/PKG-INFO
-src/chia_puzzles.egg-info/SOURCES.txt
-src/chia_puzzles.egg-info/dependency_links.txt
-src/chia_puzzles.egg-info/requires.txt
-src/chia_puzzles.egg-info/top_level.txt
