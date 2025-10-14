@@ -5185,7 +5185,7 @@ pub const SECP256R1_MEMBER_HASH: [u8; 32] =
     hex!("05aaa1f2fb6c48b5bce952b09f3da99afa4241989878a9919aafb7d74b70ac54");
 
 /// ```text
-/// (mod (SINGLETON_STRUCT Delegated_Puzzle singleton_innerpuzhash singleton_amount)
+/// (mod (SINGLETON_STRUCT MODE Delegated_Puzzle singleton_innerpuzhash singleton_amount)
 ///   ; SINGLETON_STRUCT is ((SINGLETON_MOD_HASH, (LAUNCHER_ID, LAUNCHER_PUZZLE_HASH)))
 ///
 ///   (include condition_codes.clib)
@@ -5202,15 +5202,15 @@ pub const SECP256R1_MEMBER_HASH: [u8; 32] =
 ///
 ///   (list (list
 ///       RECEIVE_MESSAGE
-///       0x12  ; mode = puzzle sender, puzzle receiver -> 0x00 010 010
+///       MODE ; the mode is curried in for flexibility
 ///       Delegated_Puzzle
 ///       (calculate_full_puzzle_hash SINGLETON_STRUCT singleton_innerpuzhash)
 ///   ))
 /// )
 /// ```
-pub const SINGLETON_MEMBER_PUZZLE_ASSERT: [u8; 361] = hex!("ff02ffff01ff04ffff04ff12ffff04ffff0112ffff04ff0bffff04ffff02ff2effff04ff02ffff04ff09ffff04ff17ffff04ffff02ff3effff04ff02ffff04ff05ff80808080ff808080808080ff8080808080ff8080ffff04ffff01ffffff0204ff0101ffff4302ffff02ffff03ff05ffff01ff02ff16ffff04ff02ffff04ff0dffff04ffff0bff1affff0bff14ff1880ffff0bff1affff0bff1affff0bff14ff1c80ff0980ffff0bff1aff0bffff0bff14ff8080808080ff8080808080ffff010b80ff0180ffff0bff1affff0bff14ff1080ffff0bff1affff0bff1affff0bff14ff1c80ff0580ffff0bff1affff02ff16ffff04ff02ffff04ff07ffff04ffff0bff14ff1480ff8080808080ffff0bff14ff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff3effff04ff02ffff04ff09ff80808080ffff02ff3effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
-pub const SINGLETON_MEMBER_PUZZLE_ASSERT_HASH: [u8; 32] =
-    hex!("8c28a1715198a7ff97c84fa2437a2b0162c294579c69fc52efc653c37554e521");
+pub const SINGLETON_MEMBER_WITH_MODE: [u8; 359] = hex!("ff02ffff01ff04ffff04ff12ffff04ff0bffff04ff17ffff04ffff02ff2effff04ff02ffff04ff09ffff04ff2fffff04ffff02ff3effff04ff02ffff04ff05ff80808080ff808080808080ff8080808080ff8080ffff04ffff01ffffff0204ff0101ffff4302ffff02ffff03ff05ffff01ff02ff16ffff04ff02ffff04ff0dffff04ffff0bff1affff0bff14ff1880ffff0bff1affff0bff1affff0bff14ff1c80ff0980ffff0bff1aff0bffff0bff14ff8080808080ff8080808080ffff010b80ff0180ffff0bff1affff0bff14ff1080ffff0bff1affff0bff1affff0bff14ff1c80ff0580ffff0bff1affff02ff16ffff04ff02ffff04ff07ffff04ffff0bff14ff1480ff8080808080ffff0bff14ff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff3effff04ff02ffff04ff09ff80808080ffff02ff3effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const SINGLETON_MEMBER_WITH_MODE_HASH: [u8; 32] =
+    hex!("a7611d7cf6246399ff07469211d6efed96e47a44fc3be6ac9375aee995b0e010");
 
 /// ```text
 /// (mod (SINGLETON_STRUCT Delegated_Puzzle singleton_innerpuzhash singleton_amount)

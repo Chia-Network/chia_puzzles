@@ -385,9 +385,9 @@ chialisp_dictionary = [
         "05aaa1f2fb6c48b5bce952b09f3da99afa4241989878a9919aafb7d74b70ac54",
     ),
     (
-        "SINGLETON_MEMBER_PUZZLE_ASSERT",
-        "./puzzles/mips_puzzles/member_puzzles/singleton_member_puzzle_assert.clsp.hex",
-        "8c28a1715198a7ff97c84fa2437a2b0162c294579c69fc52efc653c37554e521",
+        "SINGLETON_MEMBER_WITH_MODE",
+        "./puzzles/mips_puzzles/member_puzzles/singleton_member_with_mode.clsp.hex",
+        "a7611d7cf6246399ff07469211d6efed96e47a44fc3be6ac9375aee995b0e010",
     ),
     (
         "SINGLETON_MEMBER",
