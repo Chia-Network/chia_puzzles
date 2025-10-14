@@ -1,7 +1,7 @@
 # This is the file that should be run to generate the Rust and Python files with the loaded Chialisp constants.
 
 import os
-from clvm_tools_rs import compile_clvm
+from chialisp import compile_clvm
 from chia_puzzles_py.manage_clvm import generate_hash_bytes
 
 # This is the master list of puzzles to be exported.
