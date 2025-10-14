@@ -330,9 +330,19 @@ chialisp_dictionary = [
     ),
     # Vault Member Puzzles
     (
+        "BLS_MEMBER_PUZZLE_ASSERT",
+        "./puzzles/mips_puzzles/member_puzzles/bls_member_puzzle_assert.clsp.hex",
+        "0db2c7260209fc59f28c2d188f62d8d85818f61744ade7794d675b4123acef19",
+    ),
+    (
         "BLS_MEMBER",
         "./puzzles/mips_puzzles/member_puzzles/bls_member.clsp.hex",
         "21a3ae8b3ce64d41ca98d6d8df8f465c9e1bfb19ab40284a5da8479ba7fade78",
+    ),
+    (
+        "BLS_WITH_TAPROOT_MEMBER_PUZZLE_ASSERT",
+        "./puzzles/mips_puzzles/member_puzzles/bls_with_taproot_member_puzzle_assert.clsp.hex",
+        "b9ca4641016fc97006e363e94195101bbdd97a8b95aaaca977aaea3dd8f36e89",
     ),
     (
         "BLS_WITH_TAPROOT_MEMBER",
@@ -373,6 +383,11 @@ chialisp_dictionary = [
         "SECP256R1_MEMBER",
         "./puzzles/mips_puzzles/member_puzzles/secp256r1_member.clsp.hex",
         "05aaa1f2fb6c48b5bce952b09f3da99afa4241989878a9919aafb7d74b70ac54",
+    ),
+    (
+        "SINGLETON_MEMBER_WITH_MODE",
+        "./puzzles/mips_puzzles/member_puzzles/singleton_member_with_mode.clsp.hex",
+        "a7611d7cf6246399ff07469211d6efed96e47a44fc3be6ac9375aee995b0e010",
     ),
     (
         "SINGLETON_MEMBER",

@@ -4792,6 +4792,21 @@ pub const RESTRICTIONS_HASH: [u8; 32] =
 /// (mod (PUBLIC_KEY Delegated_Puzzle)  ; delegated puzzle is passed in from the above M of N layer
 ///   (include condition_codes.clib)
 ///
+///   (list (list AGG_SIG_PUZZLE PUBLIC_KEY Delegated_Puzzle))
+/// )
+/// ```
+pub const BLS_MEMBER_PUZZLE_ASSERT: [u8; 41] =
+    hex!("ff02ffff01ff04ffff04ff02ffff04ff05ffff04ff0bff80808080ff8080ffff04ffff012cff018080");
+pub const BLS_MEMBER_PUZZLE_ASSERT_HASH: [u8; 32] =
+    hex!("0db2c7260209fc59f28c2d188f62d8d85818f61744ade7794d675b4123acef19");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// (mod (PUBLIC_KEY Delegated_Puzzle)  ; delegated puzzle is passed in from the above M of N layer
+///   (include condition_codes.clib)
+///
 ///   (list (list AGG_SIG_ME PUBLIC_KEY Delegated_Puzzle))
 /// )
 /// ```
@@ -4799,6 +4814,50 @@ pub const BLS_MEMBER: [u8; 41] =
     hex!("ff02ffff01ff04ffff04ff02ffff04ff05ffff04ff0bff80808080ff8080ffff04ffff0132ff018080");
 pub const BLS_MEMBER_HASH: [u8; 32] =
     hex!("21a3ae8b3ce64d41ca98d6d8df8f465c9e1bfb19ab40284a5da8479ba7fade78");
+
+/// ```text
+/// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
+/// ; this code offers a secure approval of a delegated puzzle passed in as a Truth to be run elsewhere
+///
+/// ; Delegated_Puzzle_Hash is added to the solution in the above layer
+/// ; original_public_key, hidden_puzzle and solution are only for use in the taproot case
+/// ; set original_public_key to 0 for non-taproot case
+/// (mod (SYNTHETIC_PUBLIC_KEY Delegated_Puzzle_Hash original_public_key hidden_puzzle)
+///   (include condition_codes.clib)
+///
+///   (defmacro assert items
+///     (if (r items)
+///         (list if (f items) (c assert (r items)) (q . (x)))
+///         (f items)
+///     )
+///   )
+///
+///   ; "is_hidden_puzzle_correct" returns true iff the hidden puzzle is correctly encoded
+///
+///   (defun-inline is_hidden_puzzle_correct (SYNTHETIC_PUBLIC_KEY original_public_key hidden_puzzle_hash)
+///     (=
+///       SYNTHETIC_PUBLIC_KEY
+///       (point_add
+///         original_public_key
+///         (pubkey_for_exp (sha256 original_public_key hidden_puzzle_hash))
+///       )
+///     )
+///   )
+///
+///   ; "possibly_prepend_aggsig" is the main entry point
+///
+///   (if original_public_key
+///       (assert
+///         (is_hidden_puzzle_correct SYNTHETIC_PUBLIC_KEY original_public_key Delegated_Puzzle_Hash)
+///         ()
+///       )
+///       (list (list AGG_SIG_PUZZLE SYNTHETIC_PUBLIC_KEY Delegated_Puzzle_Hash))
+///   )
+/// )
+/// ```
+pub const BLS_WITH_TAPROOT_MEMBER_PUZZLE_ASSERT: [u8; 99] = hex!("ff02ffff01ff02ffff03ff17ffff01ff02ffff03ffff09ff05ffff1dff17ffff1effff0bff17ff0b80808080ff80ffff01ff088080ff0180ffff01ff04ffff04ff02ffff04ff05ffff04ff0bff80808080ff808080ff0180ffff04ffff012cff018080");
+pub const BLS_WITH_TAPROOT_MEMBER_PUZZLE_ASSERT_HASH: [u8; 32] =
+    hex!("b9ca4641016fc97006e363e94195101bbdd97a8b95aaaca977aaea3dd8f36e89");
 
 /// ```text
 /// ; this puzzle follows the Managed Inner Puzzle Spec MIPS01 as a Member Puzzle
@@ -5124,6 +5183,34 @@ pub const SECP256R1_MEMBER_PUZZLE_ASSERT_HASH: [u8; 32] =
 pub const SECP256R1_MEMBER: [u8; 53] = hex!("ff02ffff01ff04ffff04ff02ffff04ff17ff808080ffff841c3a8f00ff05ffff0bff0bff1780ff2f8080ffff04ffff0146ff018080");
 pub const SECP256R1_MEMBER_HASH: [u8; 32] =
     hex!("05aaa1f2fb6c48b5bce952b09f3da99afa4241989878a9919aafb7d74b70ac54");
+
+/// ```text
+/// (mod (SINGLETON_STRUCT MODE Delegated_Puzzle singleton_innerpuzhash singleton_amount)
+///   ; SINGLETON_STRUCT is ((SINGLETON_MOD_HASH, (LAUNCHER_ID, LAUNCHER_PUZZLE_HASH)))
+///
+///   (include condition_codes.clib)
+///   (include curry-and-treehash.clib)
+///
+///   ; return the full puzzlehash for a singleton with the innerpuzzle curried in
+///   ; puzzle-hash-of-curried-function is imported from curry-and-treehash.clib
+///   (defun-inline calculate_full_puzzle_hash (SINGLETON_STRUCT inner_puzzle_hash)
+///     (puzzle-hash-of-curried-function (f SINGLETON_STRUCT)
+///       inner_puzzle_hash
+///       (sha256tree SINGLETON_STRUCT)
+///     )
+///   )
+///
+///   (list (list
+///       RECEIVE_MESSAGE
+///       MODE ; the mode is curried in for flexibility
+///       Delegated_Puzzle
+///       (calculate_full_puzzle_hash SINGLETON_STRUCT singleton_innerpuzhash)
+///   ))
+/// )
+/// ```
+pub const SINGLETON_MEMBER_WITH_MODE: [u8; 359] = hex!("ff02ffff01ff04ffff04ff12ffff04ff0bffff04ff17ffff04ffff02ff2effff04ff02ffff04ff09ffff04ff2fffff04ffff02ff3effff04ff02ffff04ff05ff80808080ff808080808080ff8080808080ff8080ffff04ffff01ffffff0204ff0101ffff4302ffff02ffff03ff05ffff01ff02ff16ffff04ff02ffff04ff0dffff04ffff0bff1affff0bff14ff1880ffff0bff1affff0bff1affff0bff14ff1c80ff0980ffff0bff1aff0bffff0bff14ff8080808080ff8080808080ffff010b80ff0180ffff0bff1affff0bff14ff1080ffff0bff1affff0bff1affff0bff14ff1c80ff0580ffff0bff1affff02ff16ffff04ff02ffff04ff07ffff04ffff0bff14ff1480ff8080808080ffff0bff14ff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff3effff04ff02ffff04ff09ff80808080ffff02ff3effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const SINGLETON_MEMBER_WITH_MODE_HASH: [u8; 32] =
+    hex!("a7611d7cf6246399ff07469211d6efed96e47a44fc3be6ac9375aee995b0e010");
 
 /// ```text
 /// (mod (SINGLETON_STRUCT Delegated_Puzzle singleton_innerpuzhash singleton_amount)
