@@ -12,3 +12,6 @@ pytest = "^8.3.3"
 clvm-rs = "^0.2.3"
 chialisp = "^0.4.1"
 
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
