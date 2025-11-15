@@ -8,11 +8,10 @@ packages=[{include = "chia_puzzles_py"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-clvm-tools-rs = "^0.1.45"
 pytest = "^8.3.3"
 clvm-rs = "^0.2.3"
+chialisp = "^0.4.1"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
