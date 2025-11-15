@@ -1,0 +1,124 @@
+(
+  ;; This is a size-optimized version of curry.clib.
+  ;; The rationale is that the cost of storing 1 byte on-chain is 12000. 
+  ;; Four constants of length 32 bytes are replaced with in-place computations of them.
+  ;; The cost saving in most use cases should be significant. 
+  ;; Additionally, internal tests indicate also that this version generates code 3 bytes shorter than
+  ;; the first version of this library curry-and-treehash.clib (DP 2025.09.21).
+
+  ;; The code below is used to calculate of the tree hash of a curried function
+  ;; without actually doing the curry, and using other optimization tricks
+  ;; like unrolling `sha256tree`.
+
+  (defconstant ONE 1)
+  (defconstant TWO 2)
+
+  ;; this returns the sha256 tree hash of expression F = `((q . a1) a2)`
+  (defun hash_expression_F (a1 a2)
+         (sha256 TWO (sha256 TWO (sha256 ONE ONE) a1)
+                 (sha256 TWO a2 (sha256 ONE)))
+  )
+
+  ;; Given the tree hash `environment_hash` of an environment tree E
+  ;; and the tree hash `parameter_hash` of a constant parameter P
+  ;; return the tree hash of the tree corresponding to
+  ;; `(c (q . P) E)`
+  ;; This is the new environment tree with the addition parameter P curried in.
+  ;;
+  ;; Note that `(c (q . P) E)` = `(c . ((q . P) . (E . 0)))`
+
+  (defun-inline update_hash_for_parameter_hash (parameter_hash environment_hash)
+     (sha256 TWO (sha256 ONE #c) (hash_expression_F parameter_hash environment_hash))
+  )
+
+  ;; Given the tree hash `environment_hash` of an environment tree E
+  ;; and the tree hash `mod_hash` of a mod M
+  ;; return the tree hash of the tree corresponding to
+  ;; `(a (q . M) E)`
+  ;; This is the hash of a new function that adopts the new environment E.
+  ;; This is used to build of the tree hash of a curried function.
+  ;;
+  ;; Note that `(a (q . M) E)` = `(a . ((q . M)  . (E . 0)))`
+
+  (defun-inline tree_hash_of_apply (mod_hash environment_hash)
+     (sha256 TWO (sha256 ONE #a) (hash_expression_F mod_hash environment_hash))
+  )
+
+  ;; This function recursively calls `update_hash_for_parameter_hash`
+
+  (defun calculate_hash_of_curried_parameters (curry_parameter_hashes)
+     (if curry_parameter_hashes
+      (update_hash_for_parameter_hash (f curry_parameter_hashes) (calculate_hash_of_curried_parameters (r curry_parameter_hashes)))
+      (sha256 ONE ONE)
+     )
+  )
+
+  ;; mod_hash:
+  ;;   the hash of a puzzle function, ie. a `mod`
+  ;;
+  ;; curry_parameter_hashes:
+  ;;   a list of pre_hashed trees representing parameters to be curried into the puzzle.
+  ;;
+  ;; we return the hash of the curried expression
+  ;;   (a (q . mod_hash) (c (cp1 (c cp2 (c ... 1)...))))
+  ;;
+  ;; Note that from a user's perspective the hashes passed in here aren't simply
+  ;; the hashes of the desired parameters, but their treehash representation since
+  ;; that's the form we're assuming they take in the acutal curried program.
+
+  ;; inline functions that take varargs don't seem to work, so we can't inline `curry`
+
+  (defun curry_hashes (mod_hash . curry_parameter_hashes)
+     (tree_hash_of_apply mod_hash
+                         (calculate_hash_of_curried_parameters curry_parameter_hashes))
+  )
+
+
+  ;; This is the macro version that inlines everything and expects varargs parameters.
+  ;; It may be more efficient in some cases.
+
+  (defmacro curry_hashes_inline (mod_hash . curry_parameter_hashes)
+    (qq
+      (sha256
+        ; apply
+        TWO 
+	(sha256 ONE #a)
+        (sha256 TWO
+          ; func
+          (sha256 TWO
+            (sha256 ONE ONE)
+            (unquote mod_hash)
+          )
+          (sha256 TWO
+            ; args
+            (unquote (c build_pre_hashed_environment curry_parameter_hashes))
+            (sha256 ONE)
+          )
+        )
+      )
+    )
+  )
+
+
+  ;; helper macro
+
+  (defmacro build_pre_hashed_environment curry_parameter_hashes
+    (qq
+      (sha256
+        TWO 
+	(sha256 ONE #c)
+        (sha256 TWO
+          (sha256 TWO
+            (sha256 ONE ONE)
+            (unquote (f curry_parameter_hashes))
+          )
+          (sha256 TWO
+            (unquote (if (r curry_parameter_hashes) (c build_pre_hashed_environment (r curry_parameter_hashes)) (q . (sha256 ONE ONE))))
+            (sha256 ONE)
+          )
+        )
+      )
+    )
+  )
+
+)
