@@ -31,6 +31,8 @@ jobs:
 
       - name: Setup Python
         uses: Chia-Network/actions/setup-python@main
+        with:
+          python-version: 3.12
 
       - name: Install Dependencies
         run: |
@@ -53,6 +55,8 @@ jobs:
 
       - name: Setup Python
         uses: Chia-Network/actions/setup-python@main
+        with:
+          python-version: 3.12
 
       - name: Install Dependencies
         run: |
@@ -113,7 +117,7 @@ jobs:
 
       - uses: Chia-Network/actions/setup-python@main
         with:
-          python-version: ${{ matrix.python.major-dot-minor }}
+          python-version: 3.12
 
       - name: Update pip
         run: |
@@ -133,7 +137,7 @@ jobs:
           pip wheel --no-deps -w dist .
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: wheel-sdist
           path: ./dist
@@ -146,7 +150,7 @@ jobs:
         run: cargo publish --dry-run
 
       - name: Upload crate artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: crate
           path: ./target/package/*-*.crate
