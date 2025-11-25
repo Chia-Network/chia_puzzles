@@ -31,6 +31,8 @@ jobs:
 
       - name: Setup Python
         uses: Chia-Network/actions/setup-python@main
+        with:
+          python-version: 3.12
 
       - name: Install Poetry
         run: |
