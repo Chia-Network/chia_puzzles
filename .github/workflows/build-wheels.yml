@@ -31,6 +31,8 @@ jobs:
 
       - name: Setup Python
         uses: Chia-Network/actions/setup-python@main
+        with:
+          python-version: 3.12
 
       - name: Install Dependencies
         run: |
@@ -53,6 +55,8 @@ jobs:
 
       - name: Setup Python
         uses: Chia-Network/actions/setup-python@main
+        with:
+          python-version: 3.12
 
       - name: Install Dependencies
         run: |
@@ -113,7 +117,7 @@ jobs:
 
       - uses: Chia-Network/actions/setup-python@main
         with:
-          python-version: ${{ matrix.python.major-dot-minor }}
+          python-version: 3.12
 
       - name: Update pip
         run: |
