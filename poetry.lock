@@ -2,18 +2,18 @@
 
 [[package]]
 name = "clvm-rs"
-version = "0.16.2"
+version = "0.16.4"
 description = "Implementation of `clvm` for Chia Network's cryptocurrency"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "clvm_rs-0.16.2-cp38-abi3-macosx_13_0_arm64.whl", hash = "sha256:dcfa99b45f3f51531447c2da072cc56f564e1b872655d37611c059fcea1ca740"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-macosx_13_0_x86_64.whl", hash = "sha256:2830e92ca7f81b86c664f819ba00d89367e7bf71a8138aa78cf9cdc3ccffdd0c"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:5806461645df7a9e2e81f8f98995834a0279fed59e79aade5a8a4805ea3f1168"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:f3696e5e6342e31ad4e27336f67cd856522f95deca5e886bb157dc694e23e120"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-win_amd64.whl", hash = "sha256:fc1373c1e5e77257fba516358793599b091c088f868cd27cb722eb67823f4698"},
-    {file = "clvm_rs-0.16.2.tar.gz", hash = "sha256:d0093bbd3e8a7a8735be63f0df7f47c7c05c1b968e873c282b7a4fdc515e2061"},
+    {file = "clvm_rs-0.16.4-cp38-abi3-macosx_13_0_arm64.whl", hash = "sha256:40641791ce2cffeb8fd8a18beaaae3803d78db09dfe370add45cdf8dc09a9315"},
+    {file = "clvm_rs-0.16.4-cp38-abi3-macosx_13_0_x86_64.whl", hash = "sha256:97234ace6fac2dd07e954c478f29c974facd9b1defd5ddd39484f802f934ed38"},
+    {file = "clvm_rs-0.16.4-cp38-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:78df7dd4d489282f4f2629e3b5493b72303a373b473056c98e702d3b326125bf"},
+    {file = "clvm_rs-0.16.4-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:7a829f3f4887fc76463aaba7ef05961cc6e6a6867c4262ae9a65a5fca6c17f00"},
+    {file = "clvm_rs-0.16.4-cp38-abi3-win_amd64.whl", hash = "sha256:9fde5fdbb3c01f5bd2b01334b1a6200f938d2c47f405b852e46b9900a03e348f"},
+    {file = "clvm_rs-0.16.4.tar.gz", hash = "sha256:69414eeb532e67393f35c39c5d2791fa5e3d8ef38139f9c934d6345eb113983a"},
 ]
 
 [[package]]
