@@ -2,18 +2,18 @@
 
 [[package]]
 name = "clvm-rs"
-version = "0.16.2"
+version = "0.17.0"
 description = "Implementation of `clvm` for Chia Network's cryptocurrency"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "clvm_rs-0.16.2-cp38-abi3-macosx_13_0_arm64.whl", hash = "sha256:dcfa99b45f3f51531447c2da072cc56f564e1b872655d37611c059fcea1ca740"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-macosx_13_0_x86_64.whl", hash = "sha256:2830e92ca7f81b86c664f819ba00d89367e7bf71a8138aa78cf9cdc3ccffdd0c"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:5806461645df7a9e2e81f8f98995834a0279fed59e79aade5a8a4805ea3f1168"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:f3696e5e6342e31ad4e27336f67cd856522f95deca5e886bb157dc694e23e120"},
-    {file = "clvm_rs-0.16.2-cp38-abi3-win_amd64.whl", hash = "sha256:fc1373c1e5e77257fba516358793599b091c088f868cd27cb722eb67823f4698"},
-    {file = "clvm_rs-0.16.2.tar.gz", hash = "sha256:d0093bbd3e8a7a8735be63f0df7f47c7c05c1b968e873c282b7a4fdc515e2061"},
+    {file = "clvm_rs-0.17.0-cp38-abi3-macosx_13_0_arm64.whl", hash = "sha256:d9f7f7a07445df88f62e3190d74ccdbf78f02f035801a488641d8287cf211bcb"},
+    {file = "clvm_rs-0.17.0-cp38-abi3-macosx_13_0_x86_64.whl", hash = "sha256:79834f363bc3e30be59212f72f3c2d5d34de37691872d222a31ad87d22e4d844"},
+    {file = "clvm_rs-0.17.0-cp38-abi3-manylinux_2_28_aarch64.whl", hash = "sha256:7d69aa9faebb04ce760ec1ca48677603bc6c099208ea8bd245dc81a14a1c50e5"},
+    {file = "clvm_rs-0.17.0-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:26d8902020c01959cfb229097511a8b11f871e91e7a94ef7dfe2c016636cd66e"},
+    {file = "clvm_rs-0.17.0-cp38-abi3-win_amd64.whl", hash = "sha256:9e433835715ee03a2a5988bf444fd1b54ef6092d2173024968cda921a3b21fd4"},
+    {file = "clvm_rs-0.17.0.tar.gz", hash = "sha256:c89285119a0d664ad7108b8bbc1d41e5c458e4fb5ca02bccad3753684db93591"},
 ]
 
 [[package]]
@@ -213,4 +213,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "3be9ff7ed752435949cfc7953ff588ce4c4c007bfbfec68a0391ccf21f4f236f"
+content-hash = "6a0aa305be02fa946d41fe23ac73b663362bf36895112eae7231df61fa7ed970"
