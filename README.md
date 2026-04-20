@@ -27,7 +27,7 @@ python -m venv venv
 
 pip install poetry
 . ./venv/bin/activate
-poetry install
+poetry install --extras=dev
 pytest chia_puzzles_py/tests
 ```
 
