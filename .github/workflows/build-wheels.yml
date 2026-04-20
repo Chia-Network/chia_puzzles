@@ -65,7 +65,7 @@ jobs:
 
       - name: poetry install
         run: |
-          poetry install
+          poetry install --extras=dev
 
       - name: Check generated
         run: |
