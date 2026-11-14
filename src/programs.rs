@@ -5555,6 +5555,637 @@ pub const ENFORCE_DPUZ_WRAPPERS_HASH: [u8; 32] =
     hex!("1f94aa2381c1c02fec90687c0b045ef3cad4b458f8eac5bd90695b4d89624f09");
 
 /// ```text
+/// (mod
+///   (
+///     THIS_MOD_HASH
+///     ROOT
+///     STATE
+///     my_amount
+///     spend_type
+///     spend_solution
+///     ; optional
+///     puzzle_reveal  ; this is a puzzle that is included in the root
+///     proof_of_inclusion
+///     puzzle_solution
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry_and_treehash.clib)
+///   (include utility_macros.clib)
+///   (include merkle_utils.clib)
+///
+///   (defconstant REKEY_KW 'r')
+///
+///   ; STATE is a tree with the following elements in order
+///   ; ((REKEY_MOD_HASH . ACH_MOD_HASH) . (ACH_TIMELOCK . (BASE_REKEY_TIMELOCK . SLOW_REKEY_PENALTY)))
+///
+///   (defun-inline REKEY_MOD_HASH (STATE) (f (f STATE)))
+///   (defun-inline ACH_MOD_HASH (STATE) (r (f STATE)))
+///   (defun-inline ACH_TIMELOCK (STATE) (f (r STATE)))
+///   (defun-inline BASE_REKEY_TIMELOCK (STATE) (f (r (r STATE))))
+///   (defun-inline SLOW_REKEY_PENALTY (STATE) (r (r (r STATE))))
+///
+///   ;;; utility functions ;;;
+///   (defun calculate_our_ph (THIS_MOD_HASH ROOT STATE)
+///     (puzzle_hash_of_curried_function THIS_MOD_HASH
+///       (sha256tree STATE)
+///       (sha256 1 ROOT)
+///       (sha256 1 THIS_MOD_HASH)
+///     )
+///   )
+///
+///   (defun-inline calculate_rekey_ph (REKEY_MOD_HASH ROOT timelock_multiple new_root)
+///     (puzzle_hash_of_curried_function REKEY_MOD_HASH
+///       (sha256tree (list
+///         new_root
+///         ROOT
+///         timelock_multiple
+///       ))
+///     )
+///   )
+///
+///   (defun-inline calculate_ach_payment (ACH_MOD_HASH ROOT clawforward_ph)
+///     (puzzle_hash_of_curried_function ACH_MOD_HASH
+///       (sha256tree (c ROOT clawforward_ph))
+///     )
+///   )
+///
+///   (defun-inline calculate_timelock (BASE_REKEY_TIMELOCK SLOW_REKEY_PENALTY timelock_multiple)
+///     (+ (* BASE_REKEY_TIMELOCK timelock_multiple) (i (> timelock_multiple 1) SLOW_REKEY_PENALTY 0))
+///   )
+///
+///   (defun-inline opcode (condition) (f condition))
+///   (defun-inline puzhash (condition) (f (r condition)))
+///   (defun-inline amount (condition) (f (r (r condition))))
+///
+///   (defun check_singleton_and_even (
+///     conditions
+///     (singleton_ph . singleton_amount)  ; singleton info - we assert the singleton we find has this format
+///     (even_ph . even_amount)            ; even coin info - we assert the even coin we find has this format
+///     (seen_singleton . seen_even)  ; flags used to prevent more than one singleton and one even coin from being created
+///   )
+///     (if conditions
+///         (c
+///           (f conditions)
+///           (check_singleton_and_even
+///             (r conditions)
+///             (c singleton_ph singleton_amount)
+///             (c even_ph even_amount)
+///             (if (= CREATE_COIN (opcode (f conditions)))
+///                 (if (logand (amount (f conditions)) 1)
+///                     (assert
+///                       (not seen_singleton)  ; not seen
+///                       (= singleton_ph (puzhash (f conditions)))
+///                       (= singleton_amount (amount (f conditions)))
+///                       ; then
+///                       (c 1 seen_even)
+///                     )
+///                     (assert
+///                       (not seen_even)  ; not seen
+///                       (= even_ph (puzhash (f conditions)))
+///                       (= even_amount (amount (f conditions)))
+///                       ; then
+///                       (c seen_singleton 1)
+///                     )
+///                 )
+///                 (assert
+///                   (not
+///                     (and
+///                       (= (opcode (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
+///                       (= (f (r (f conditions))) REKEY_KW)
+///                     )
+///                   )
+///                   (c seen_singleton seen_even)
+///                 )
+///             )
+///           )
+///         )
+///         (if (all seen_singleton seen_even) () (x))
+///     )
+///   )
+///
+///   ;;; FINISH REKEY ;;;
+///   (defun finish_rekey (
+///     THIS_MOD_HASH
+///     ROOT STATE
+///     my_amount
+///     ( ; this is the spend_solution
+///       timelock_multiple
+///       new_root
+///     )
+///   )
+///     (list
+///       (list ASSERT_PUZZLE_ANNOUNCEMENT
+///             (sha256
+///               (calculate_rekey_ph (REKEY_MOD_HASH STATE) ROOT timelock_multiple new_root)
+///               REKEY_KW
+///             )
+///       )
+///       (list CREATE_PUZZLE_ANNOUNCEMENT REKEY_KW)
+///       (list CREATE_COIN
+///             (calculate_our_ph THIS_MOD_HASH new_root STATE)
+///             my_amount
+///       )
+///     )
+///   )
+///
+///   ;;; START REKEY ;;;
+///   (defun start_rekey (
+///     THIS_MOD_HASH
+///     ROOT STATE
+///     my_amount
+///     conditions
+///     (  ; this is the spend_solution
+///       timelock_multiple
+///       new_root_after
+///     )
+///   )
+///     (c
+///       (list ASSERT_SECONDS_RELATIVE
+///             (calculate_timelock
+///               (BASE_REKEY_TIMELOCK STATE)
+///               (SLOW_REKEY_PENALTY STATE)
+///               timelock_multiple
+///             )
+///       )
+///       (check_singleton_and_even conditions
+///         (c (calculate_our_ph THIS_MOD_HASH ROOT STATE) my_amount)                                ; assert that we are recreating ourself in generated conditions
+///         (c (calculate_rekey_ph (REKEY_MOD_HASH STATE) ROOT timelock_multiple new_root_after) 0)  ; assert that we are creating a rekey coin in generated conditions
+///         (c () ())
+///       )
+///     )
+///   )
+///
+///   ;;; WITHDRAW_PAYMENT ;;;
+///   (defun handle_payment (
+///     THIS_MOD_HASH
+///     ROOT STATE
+///     my_amount
+///     conditions
+///     (  ; this is the spend_solution
+///       out_amount
+///       in_amount
+///       clawforward_ph
+///     )
+///   )
+///     (assert (not (> 0 in_amount))
+///       ; then
+///       (c (list ASSERT_SECONDS_RELATIVE (ACH_TIMELOCK STATE))
+///           (check_singleton_and_even conditions
+///             (c (calculate_our_ph THIS_MOD_HASH ROOT STATE) (+ (- my_amount out_amount) in_amount))  ; assert that we are recreating ourself with the exact same curryed params in generated conditions after adjusting for amount change
+///             (c (calculate_ach_payment (ACH_MOD_HASH STATE) ROOT clawforward_ph) out_amount)         ; assert that we are creating the clawback_able payment
+///             (c () (not out_amount))  ; mark it as seen if the out amount is 0 - preventing unreported even coin creations
+///           )
+///       )
+///     )
+///   )
+///
+///   ; main
+///   (c (list ASSERT_MY_AMOUNT my_amount)  ; assert our amount because every path needs it
+///     (if spend_type
+///       ; In every case except finishing the rekey the spends require authentication
+///         (assert (= ROOT (simplify_merkle_proof (sha256tree puzzle_reveal) proof_of_inclusion))  ; check that inputted puzzle is included in our merkle root
+///           ; then
+///           (if (= spend_type 1)
+///               (start_rekey THIS_MOD_HASH ROOT STATE my_amount (a puzzle_reveal puzzle_solution) spend_solution)  ; run inputted puzzle and send conditions into (start_rekey)
+///               (if (= spend_type 2)
+///                   (handle_payment THIS_MOD_HASH ROOT STATE my_amount (a puzzle_reveal puzzle_solution) spend_solution)  ; run inputted puzzle and send conditions into (handle_payment)
+///                   (x)
+///               )
+///           )
+///         )
+///         (finish_rekey THIS_MOD_HASH ROOT STATE my_amount spend_solution)
+///     )
+///   )
+///
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_PREFARM_INNER: [u8; 1760] = hex!("ff02ffff01ff04ffff04ff20ffff04ff2fff808080ffff02ffff03ff5fffff01ff02ffff03ffff09ff0bffff02ff5effff04ff02ffff04ffff0bffff0101ffff02ff2effff04ff02ffff04ff82017fff8080808080ffff04ff8202ffff808080808080ffff01ff02ffff03ffff09ff5fffff010180ffff01ff02ff7effff04ff02ffff04ff05ffff04ff0bffff04ff17ffff04ff2fffff04ffff02ff82017fff8205ff80ffff04ff81bfff808080808080808080ffff01ff02ffff03ffff09ff5fffff010280ffff01ff02ff26ffff04ff02ffff04ff05ffff04ff0bffff04ff17ffff04ff2fffff04ffff02ff82017fff8205ff80ffff04ff81bfff808080808080808080ffff01ff088080ff018080ff0180ffff01ff088080ff0180ffff01ff02ff7affff04ff02ffff04ff05ffff04ff0bffff04ff17ffff04ff2fffff04ff81bfff808080808080808080ff018080ffff04ffff01ffffffff493fff50ff0233ffff3e04ff01ff0172ffffff02ff02ffff03ff05ffff01ff02ff32ffff04ff02ffff04ff0dffff04ffff0bff22ffff0bff2cff3480ffff0bff22ffff0bff22ffff0bff2cff5c80ff0980ffff0bff22ff0bffff0bff2cff8080808080ff8080808080ffff010b80ff0180ffff02ff36ffff04ff02ffff04ff05ffff04ffff02ff2effff04ff02ffff04ff17ff80808080ffff04ffff0bffff0101ff0b80ffff04ffff0bffff0101ff0580ff80808080808080ffff02ffff03ff05ffff01ff04ff09ffff02ff5affff04ff02ffff04ff0dffff04ffff04ff13ff1b80ffff04ffff04ff27ff3780ffff04ffff02ffff03ffff09ff78ff1180ffff01ff02ffff03ffff18ff59ffff010180ffff01ff02ffff03ffff20ff4f80ffff01ff02ffff03ffff09ff13ff2980ffff01ff02ffff03ffff09ff1bff5980ffff01ff04ffff0101ff6f80ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff02ffff03ffff20ff6f80ffff01ff02ffff03ffff09ff27ff2980ffff01ff02ffff03ffff09ff37ff5980ffff01ff04ff4fffff010180ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff088080ff018080ff0180ffff01ff02ffff03ffff20ffff02ffff03ffff09ff11ff2480ffff01ff02ffff03ffff09ff29ff7c80ffff01ff0101ff8080ff0180ff8080ff018080ffff01ff04ff4fff6f80ffff01ff088080ff018080ff0180ff8080808080808080ffff01ff02ffff03ffff22ff4fff6f80ff80ffff01ff088080ff018080ff0180ff04ffff04ff30ffff04ffff0bffff02ff36ffff04ff02ffff04ff47ffff04ffff02ff2effff04ff02ffff04ffff04ff82015fffff04ff0bffff04ff819fff80808080ff80808080ff8080808080ff7c80ff808080ffff04ffff04ff24ffff04ff7cff808080ffff04ffff04ff78ffff04ffff02ff2affff04ff02ffff04ff05ffff04ff82015fffff04ff17ff808080808080ffff04ff2fff80808080ff80808080ffffff02ffff03ffff20ffff15ff80ff8202bf8080ffff01ff04ffff04ff28ffff04ff57ff808080ffff02ff5affff04ff02ffff04ff5fffff04ffff04ffff02ff2affff04ff02ffff04ff05ffff04ff0bffff04ff17ff808080808080ffff10ffff11ff2fff82013f80ff8202bf8080ffff04ffff04ffff02ff36ffff04ff02ffff04ff67ffff04ffff02ff2effff04ff02ffff04ffff04ff0bff8205bf80ff80808080ff8080808080ff82013f80ffff04ffff04ff80ffff20ff82013f8080ff8080808080808080ffff01ff088080ff0180ff0bff22ffff0bff2cff5880ffff0bff22ffff0bff22ffff0bff2cff5c80ff0580ffff0bff22ffff02ff32ffff04ff02ffff04ff07ffff04ffff0bff2cff2c80ff8080808080ffff0bff2cff8080808080ffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff2effff04ff02ffff04ff09ff80808080ffff02ff2effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ffff02ffff03ff1bffff01ff02ff5effff04ff02ffff04ffff02ffff03ffff18ffff0101ff1380ffff01ff0bffff0102ff2bff0580ffff01ff0bffff0102ff05ff2b8080ff0180ffff04ffff04ffff17ff13ffff0181ff80ff3b80ff8080808080ffff010580ff0180ff04ffff04ff28ffff04ffff10ffff12ff81b7ff82013f80ffff03ffff15ff82013fffff010180ff81f7ff808080ff808080ffff02ff5affff04ff02ffff04ff5fffff04ffff04ffff02ff2affff04ff02ffff04ff05ffff04ff0bffff04ff17ff808080808080ff2f80ffff04ffff04ffff02ff36ffff04ff02ffff04ff47ffff04ffff02ff2effff04ff02ffff04ffff04ff8202bfffff04ff0bffff04ff82013fff80808080ff80808080ff8080808080ff8080ffff01ffff808080808080808080ff018080");
+pub const INTERNAL_CUSTODY_PREFARM_INNER_HASH: [u8; 32] =
+    hex!("66f0fe81cbaf300b32f4b3ca19085ecd5b6378f0449e4c589f8590da0a6b9773");
+
+/// ```text
+/// (mod
+///   (
+///     INNER_PUZZLE
+///     MERKLE_ROOT
+///     CURRIED_ARGS
+///     parameters
+///     merkle_proof
+///     inner_solution
+///   )
+///   ; This puzzle takes a merkle root.
+///   ; The merkle root contains a tree of puzzles that can be executed with the passed in CURRIED_ARGS, and inner_solution
+///
+///   (include curry_and_treehash.clib)
+///   (include merkle_utils.clib)
+///   (include utility_macros.clib)
+///
+///   ; For the filter layers we put the INNER_PUZZLE as the filter puzzle
+///   ; For drop coins we put the INNER_PUZZLE as `(a 2 5)`
+///
+///   (assert (= MERKLE_ROOT (simplify_merkle_proof (sha256tree parameters) merkle_proof))
+///     ; then
+///     (a INNER_PUZZLE (list parameters (if CURRIED_ARGS (c CURRIED_ARGS inner_solution) inner_solution)))
+///   )
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_P2_MERKLE_TREE: [u8; 318] = hex!("ff02ffff01ff02ffff03ffff09ff0bffff02ff06ffff04ff02ffff04ffff0bffff0101ffff02ff04ffff04ff02ffff04ff2fff8080808080ffff04ff5fff808080808080ffff01ff02ff05ffff04ff2fffff04ffff02ffff03ff17ffff01ff04ff17ff81bf80ffff0181bf80ff0180ff80808080ffff01ff088080ff0180ffff04ffff01ffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff04ffff04ff02ffff04ff09ff80808080ffff02ff04ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff02ffff03ff1bffff01ff02ff06ffff04ff02ffff04ffff02ffff03ffff18ffff0101ff1380ffff01ff0bffff0102ff2bff0580ffff01ff0bffff0102ff05ff2b8080ff0180ffff04ffff04ffff17ff13ffff0181ff80ff3b80ff8080808080ffff010580ff0180ff018080");
+pub const INTERNAL_CUSTODY_P2_MERKLE_TREE_HASH: [u8; 32] =
+    hex!("fa279361042957f4dd2c5dcb9ac082bf4c11f2b02d57fcb547347a4934344bf7");
+
+/// ```text
+/// (mod
+///   (
+///     CLAWBACK_PH
+///     (PUZZLE_ROOT . _)  ; PUZZLE_ROOT is the custody coin's merkle root which we use to authenticate we're being withdrawn by some set of legal keys
+///     my_amount
+///     puzzle_reveal
+///     merkle_proof
+///     puzzle_solution
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry_and_treehash.clib)
+///   (include merkle_utils.clib)
+///   (include utility_macros.clib)
+///
+///   (defun-inline opcode (condition) (f condition))
+///   (defun-inline puzhash (condition) (f (r condition)))
+///   (defun-inline amount (condition) (f (r (r condition))))
+///
+///   (defun check_for_clawback (conditions CLAWBACK_PH amount seen)
+///     (if conditions
+///       (c (f conditions)
+///         (check_for_clawback
+///           (r conditions)
+///           CLAWBACK_PH
+///           amount
+///           (if (= CREATE_COIN (opcode (f conditions)))
+///               (assert
+///                 (not seen)  ; not seen
+///                 (= CLAWBACK_PH (puzhash (f conditions)))
+///                 (= amount (amount (f conditions)))
+///                 ; then
+///                 1
+///               )
+///               seen
+///           )
+///         )
+///       )
+///       (assert seen ())
+///     )
+///   )
+///
+///   ; main
+///   (assert (= PUZZLE_ROOT (simplify_merkle_proof (sha256tree puzzle_reveal) merkle_proof))
+///     ; then
+///     (c (list ASSERT_MY_AMOUNT my_amount)
+///       (check_for_clawback (a puzzle_reveal puzzle_solution) CLAWBACK_PH my_amount ())
+///     )
+///   )
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_ACH_CLAWBACK: [u8; 519] = hex!("ff02ffff01ff02ffff03ffff09ff13ffff02ff1effff04ff02ffff04ffff0bffff0101ffff02ff16ffff04ff02ffff04ff2fff8080808080ffff04ff5fff808080808080ffff01ff04ffff04ff08ffff04ff17ff808080ffff02ff0affff04ff02ffff04ffff02ff2fff81bf80ffff04ff05ffff04ff17ffff01ff8080808080808080ffff01ff088080ff0180ffff04ffff01ffff4933ffff02ffff03ff05ffff01ff04ff09ffff02ff0affff04ff02ffff04ff0dffff04ff0bffff04ff17ffff04ffff02ffff03ffff09ff0cff1180ffff01ff02ffff03ffff20ff2f80ffff01ff02ffff03ffff09ff0bff2980ffff01ff02ffff03ffff09ff17ff5980ffff01ff0101ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff088080ff0180ffff012f80ff0180ff8080808080808080ffff01ff02ffff03ff2fff80ffff01ff088080ff018080ff0180ffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff16ffff04ff02ffff04ff09ff80808080ffff02ff16ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff02ffff03ff1bffff01ff02ff1effff04ff02ffff04ffff02ffff03ffff18ffff0101ff1380ffff01ff0bffff0102ff2bff0580ffff01ff0bffff0102ff05ff2b8080ff0180ffff04ffff04ffff17ff13ffff0181ff80ff3b80ff8080808080ffff010580ff0180ff018080");
+pub const INTERNAL_CUSTODY_ACH_CLAWBACK_HASH: [u8; 32] =
+    hex!("38b68260d64d38397da1cfa1116c5a968432410a9a4568bf7e5f900a0b925bea");
+
+/// ```text
+/// (mod
+///   (
+///     CLAWBACK_PERIOD
+///     (_ . P2_PH)  ; the first param is used by the other spend case, P2_PH is where we pay out to if payment is not withdrawn
+///     my_amount
+///   )
+///
+///   (include condition_codes.clib)
+///
+///   (list
+///     (list ASSERT_SECONDS_RELATIVE CLAWBACK_PERIOD)
+///     (list ASSERT_MY_AMOUNT my_amount)
+///     (list CREATE_COIN P2_PH my_amount)
+///     (list CREATE_COIN_ANNOUNCEMENT ())  ; for fees
+///   )
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_ACH_COMPLETION: [u8; 99] = hex!("ff02ffff01ff04ffff04ff0cffff04ff05ff808080ffff04ffff04ff08ffff04ff17ff808080ffff04ffff04ff0affff04ff1bffff04ff17ff80808080ffff04ffff04ff0effff01ff808080ff8080808080ffff04ffff01ffff4950ff333cff018080");
+pub const INTERNAL_CUSTODY_ACH_COMPLETION_HASH: [u8; 32] =
+    hex!("101df03a30c1098e2e9dbc3fff3cd4b75b064457a19ac05fc747d3af69f12564");
+
+/// ```text
+/// (mod
+///   (
+///     (NEW_CUSTODY_ROOT OLD_CUSTODY_ROOT TIMELOCK)  ; NEW_CUSTODY_ROOT isn't used in this spend_case but is curried in for verification in puzhash
+///     my_puzzle_hash
+///     puzzle_reveal
+///     merkle_proof
+///     puzzle_solution
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry_and_treehash.clib)
+///   (include merkle_utils.clib)
+///   (include utility_macros.clib)
+///
+///   (defconstant REKEY_KW 'r')
+///
+///   (defun-inline opcode (condition) (f condition))
+///   (defun-inline puzhash (condition) (f (r condition)))
+///   (defun-inline amount (condition) (f (r (r condition))))
+///
+///   (defun check_for_and_filter_clawback_and_rekey_announcement (conditions my_puzzle_hash amount seen)
+///     (if conditions
+///       (if (= CREATE_COIN (opcode (f conditions)))
+///           (assert
+///             (not seen)  ; not seen
+///             (= my_puzzle_hash (puzhash (f conditions)))  ; assert that the people clawbacking are capable of creating us in the first place
+///             (= amount (amount (f conditions)))
+///             ; then
+///             (check_for_and_filter_clawback_and_rekey_announcement
+///               (r conditions)
+///               my_puzzle_hash
+///               amount
+///               1
+///             )
+///           )
+///           (assert
+///             (not
+///               (and
+///                 (= (opcode (f conditions)) CREATE_PUZZLE_ANNOUNCEMENT)
+///                 (= (f (r (f conditions))) REKEY_KW)  ; block this spend from authorising the rekey
+///               )
+///             )
+///             (c (f conditions)
+///               (check_for_and_filter_clawback_and_rekey_announcement
+///                 (r conditions)
+///                 my_puzzle_hash
+///                 amount
+///                 seen
+///               )
+///             )
+///           )
+///       )
+///       (assert seen ())
+///     )
+///   )
+///
+///   (assert (> TIMELOCK 0)  ; No clawing back locks
+///     ; then
+///     ; By using the custody's root we can force a signature from one of the legal sets of keys thus proving that this is a legitimate clawback
+///     (assert (= OLD_CUSTODY_ROOT (simplify_merkle_proof (sha256tree puzzle_reveal) merkle_proof))
+///       ; then
+///       (c (list ASSERT_MY_PUZZLEHASH my_puzzle_hash)
+///         (check_for_and_filter_clawback_and_rekey_announcement
+///           (a puzzle_reveal puzzle_solution)
+///           my_puzzle_hash
+///           0
+///           ()
+///         )
+///       )
+///     )
+///   )
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_REKEY_CLAWBACK: [u8; 646] = hex!("ff02ffff01ff02ffff03ffff15ff2dff8080ffff01ff02ffff03ffff09ff15ffff02ff1effff04ff02ffff04ffff0bffff0101ffff02ff16ffff04ff02ffff04ff17ff8080808080ffff04ff2fff808080808080ffff01ff04ffff04ff08ffff04ff0bff808080ffff02ff1affff04ff02ffff04ffff02ff17ff5f80ffff04ff0bffff01ff80ff80808080808080ffff01ff088080ff0180ffff01ff088080ff0180ffff04ffff01ffff48ff333effff72ff02ffff03ff05ffff01ff02ffff03ffff09ff14ff1180ffff01ff02ffff03ffff20ff2f80ffff01ff02ffff03ffff09ff0bff2980ffff01ff02ffff03ffff09ff17ff5980ffff01ff02ff1affff04ff02ffff04ff0dffff04ff0bffff04ff17ffff01ff01808080808080ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff02ffff03ffff20ffff02ffff03ffff09ff11ff1c80ffff01ff02ffff03ffff09ff29ff1280ffff01ff0101ff8080ff0180ff8080ff018080ffff01ff04ff09ffff02ff1affff04ff02ffff04ff0dffff04ff0bffff04ff17ffff04ff2fff8080808080808080ffff01ff088080ff018080ff0180ffff01ff02ffff03ff2fff80ffff01ff088080ff018080ff0180ffff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff16ffff04ff02ffff04ff09ff80808080ffff02ff16ffff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff02ffff03ff1bffff01ff02ff1effff04ff02ffff04ffff02ffff03ffff18ffff0101ff1380ffff01ff0bffff0102ff2bff0580ffff01ff0bffff0102ff05ff2b8080ff0180ffff04ffff04ffff17ff13ffff0181ff80ff3b80ff8080808080ffff010580ff0180ff018080");
+pub const INTERNAL_CUSTODY_REKEY_CLAWBACK_HASH: [u8; 32] =
+    hex!("7e81af82627c0907a322df54bcf56732275b58177eb4b29a3eb18ea1fe0b4ff8");
+
+/// ```text
+/// (mod
+///   (
+///     SINGLETON_STRUCT
+///     FINISHING_TIMELOCK
+///     (OLD_CUSTODY_ROOT NEW_CUSTODY_ROOT TIMELOCK)  ; the first two aren't used in this code, but are curried in for verification inside this coin's puzzlehash
+///     (parent_parent parent_inner_puz parent_amount)  ; lineage proof
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry_and_treehash.clib)
+///
+///   (defconstant REKEY_KW 'r')
+///
+///   ;; return the full puzzlehash for a singleton with the innerpuzzle curried in
+///   ; puzzle-hash-of-curried-function is imported from curry-and-treehash.clinc
+///   (defun-inline calculate_full_puzzle_hash (SINGLETON_STRUCT inner_puzzle_hash)
+///      (puzzle_hash_of_curried_function (f SINGLETON_STRUCT)
+///                                       inner_puzzle_hash
+///                                       (sha256tree SINGLETON_STRUCT)
+///      )
+///   )
+///
+///   (defun main (SINGLETON_STRUCT FINISHING_TIMELOCK parent_parent parent_puzzle parent_amount)
+///     (list
+///         (list ASSERT_SECONDS_RELATIVE FINISHING_TIMELOCK)
+///         (list ASSERT_MY_PARENT_ID (calculate_coin_id parent_parent parent_puzzle parent_amount))
+///         (list ASSERT_PUZZLE_ANNOUNCEMENT (sha256 parent_puzzle REKEY_KW))
+///         (list CREATE_PUZZLE_ANNOUNCEMENT REKEY_KW)
+///         (list CREATE_COIN_ANNOUNCEMENT ()) ; for fees
+///     )
+///   )
+///
+///   (main
+///     SINGLETON_STRUCT
+///     (i TIMELOCK FINISHING_TIMELOCK 0)  ; We use the finishing timelock in all circumstances except TIMELOCK == 0 (lock)
+///     parent_parent
+///     (calculate_full_puzzle_hash SINGLETON_STRUCT parent_inner_puz)
+///     parent_amount
+///   )
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_REKEY_COMPLETION: [u8; 588] = hex!("ff02ffff01ff02ff2effff04ff02ffff04ff05ffff04ffff03ff81b7ff0bff8080ffff04ff4fffff04ffff02ff5effff04ff02ffff04ff09ffff04ff81afffff04ffff02ff7effff04ff02ffff04ff05ff80808080ff808080808080ffff04ff82016fff8080808080808080ffff04ffff01ffffffff473fff5002ffff3c3eff0401ffffff0172ff0220ffffff02ffff03ff05ffff01ff02ff26ffff04ff02ffff04ff0dffff04ffff0bff2affff0bff3cff2c80ffff0bff2affff0bff2affff0bff3cff2280ff0980ffff0bff2aff0bffff0bff3cff8080808080ff8080808080ffff010b80ff0180ff02ffff03ffff22ffff09ffff0dff0580ff3a80ffff09ffff0dff0b80ff3a80ffff15ff17ffff0181ff8080ffff01ff0bff05ff0bff1780ffff01ff088080ff0180ffff04ffff04ff28ffff04ff0bff808080ffff04ffff04ff20ffff04ffff02ff36ffff04ff02ffff04ff17ffff04ff2fffff04ff5fff808080808080ff808080ffff04ffff04ff30ffff04ffff0bff2fff3280ff808080ffff04ffff04ff34ffff04ff32ff808080ffff04ffff04ff24ffff01ff808080ff808080808080ffff0bff2affff0bff3cff3880ffff0bff2affff0bff2affff0bff3cff2280ff0580ffff0bff2affff02ff26ffff04ff02ffff04ff07ffff04ffff0bff3cff3c80ff8080808080ffff0bff3cff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff7effff04ff02ffff04ff09ff80808080ffff02ff7effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const INTERNAL_CUSTODY_REKEY_COMPLETION_HASH: [u8; 32] =
+    hex!("ef888df7b2edf0fcc20b57fc9dea3a53b761518170b7e3cc97718acbe1e17118");
+
+/// ```text
+/// (mod
+///   (
+///       PUBKEY
+///       REKEY_MOD_HASH
+///       NEW_PUZZLE_ROOT
+///       old_puzzle_root
+///       (singleton_inner . singleton_amount)
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry_and_treehash.clib)
+///
+///   (list
+///     (list CREATE_COIN
+///       (puzzle_hash_of_curried_function REKEY_MOD_HASH
+///         (sha256tree (list
+///           NEW_PUZZLE_ROOT
+///           old_puzzle_root
+///           0
+///         ))
+///       )
+///       0
+///     )
+///     (list CREATE_COIN singleton_inner singleton_amount)
+///     (list AGG_SIG_ME PUBKEY ())
+///   )
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_P2_NEW_LOCK_LEVEL: [u8; 411] = hex!("ff02ffff01ff04ffff04ff14ffff04ffff02ff2effff04ff02ffff04ff0bffff04ffff02ff3effff04ff02ffff04ffff04ff17ffff04ff2fffff01ff80808080ff80808080ff8080808080ffff01ff80808080ffff04ffff04ff14ffff04ff819fffff04ff81dfff80808080ffff04ffff04ff10ffff04ff05ffff01ff80808080ff80808080ffff04ffff01ffffff3202ff33ff0401ffff0102ffff02ffff03ff05ffff01ff02ff16ffff04ff02ffff04ff0dffff04ffff0bff1affff0bff3cff2c80ffff0bff1affff0bff1affff0bff3cff1280ff0980ffff0bff1aff0bffff0bff3cff8080808080ff8080808080ffff010b80ff0180ffff0bff1affff0bff3cff1880ffff0bff1affff0bff1affff0bff3cff1280ff0580ffff0bff1affff02ff16ffff04ff02ffff04ff07ffff04ffff0bff3cff3c80ff8080808080ffff0bff3cff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff3effff04ff02ffff04ff09ff80808080ffff02ff3effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const INTERNAL_CUSTODY_P2_NEW_LOCK_LEVEL_HASH: [u8; 32] =
+    hex!("6f2fb262b1710a17550a6567ca072e5e982ae5bb029f899cfb336bd320a9de01");
+
+/// ```text
+/// (mod
+///   (
+///     CURRIED_ARGS  ; this is an abstraction of a list of curried arguments
+///     PUZZLE_REVEAL  ; inside p2_merkle_tree this is the "parameters"
+///     (  ; inside p2_merkle_tree this is the "inner_solution"
+///       solution
+///       curried_args_to_coin  ; These are the args that are curried into the even coin that we see
+///     )
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry_and_treehash.clib)
+///   (include utility_macros.clib)
+///
+///   ; CURRIED_ARGS is a list of these 4 things:
+///   ;
+///   ; ((REKEY_MOD_HASH . ALLOWED_REKEY_TIMELOCK) . (ACH_MOD_HASH . CLAWBACK_PH))
+///
+///   (defun-inline REKEY_MOD_HASH (CURRIED_ARGS) (f (f CURRIED_ARGS)))
+///   (defun-inline ALLOWED_REKEY_TIMELOCK (CURRIED_ARGS) (r (f CURRIED_ARGS)))
+///   (defun-inline ACH_MOD_HASH (CURRIED_ARGS) (f (r CURRIED_ARGS)))
+///   (defun-inline CLAWBACK_PH (CURRIED_ARGS) (r (r CURRIED_ARGS)))
+///
+///   (defun-inline opcode (condition) (f condition))
+///   (defun-inline puzhash (condition) (f (r condition)))
+///   (defun-inline amount (condition) (f (r (r condition))))
+///
+///   (defun check_even_coin (conditions curried_args_to_coin CURRIED_ARGS)
+///     (if conditions
+///         (c (f conditions)
+///           (assert
+///             (if (and  ; if this is an even CREATE_COIN
+///                   (= CREATE_COIN (opcode (f conditions)))
+///                   (not (logand (amount (f conditions)) 1))
+///                 )
+///                 (assert
+///                   ; we check it different based on whether it's amount 0 (rekey) or not (payment)
+///                   (if (amount (f conditions))
+///                       ; PAYMENT CHECKING
+///                       (or
+///                         ; either it's an ach clawback ...
+///                         (=
+///                           (puzhash (f conditions))
+///                           (CLAWBACK_PH CURRIED_ARGS)
+///                         )
+///                         ; ...or it's ach drop coin
+///                         (=
+///                           (puzhash (f conditions))
+///                           (puzzle_hash_of_curried_function (ACH_MOD_HASH CURRIED_ARGS) (sha256tree curried_args_to_coin))
+///                         )
+///                       )
+///                       ; REKEY CHECKING
+///                       (and
+///                         ; it's a rekey coin
+///                         (=
+///                           (puzhash (f conditions))
+///                           (puzzle_hash_of_curried_function (REKEY_MOD_HASH CURRIED_ARGS) (sha256tree curried_args_to_coin))
+///                         )
+///                         ; with the correct timelock
+///                         (not (> (ALLOWED_REKEY_TIMELOCK CURRIED_ARGS) (f (r (r curried_args_to_coin)))))
+///                       )
+///                   )
+///                   (check_even_coin
+///                     (r conditions)
+///                     curried_args_to_coin
+///                     CURRIED_ARGS
+///                   )
+///                 )
+///                 (check_even_coin
+///                   (r conditions)
+///                   curried_args_to_coin
+///                   CURRIED_ARGS
+///                 )
+///             )
+///           )
+///         )
+///         ()
+///     )
+///   )
+///
+///   (check_even_coin (a PUZZLE_REVEAL solution) curried_args_to_coin CURRIED_ARGS)
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_REKEY_AND_PAYMENT: [u8; 693] = hex!("ff02ffff01ff02ff16ffff04ff02ffff04ffff02ff0bff2780ffff04ff57ffff04ff05ff808080808080ffff04ffff01ffffff0233ff04ff0101ffff02ff02ffff03ff05ffff01ff02ff1affff04ff02ffff04ff0dffff04ffff0bff12ffff0bff2cff1480ffff0bff12ffff0bff12ffff0bff2cff3c80ff0980ffff0bff12ff0bffff0bff2cff8080808080ff8080808080ffff010b80ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ffff03ffff02ffff03ffff09ff18ff1180ffff01ff02ffff03ffff20ffff18ff59ffff01018080ffff01ff0101ff8080ff0180ff8080ff0180ffff01ff02ffff03ffff02ffff03ff59ffff01ff02ffff03ffff09ff29ff7780ffff01ff0101ffff01ff02ffff03ffff09ff29ffff02ff2effff04ff02ffff04ff57ffff04ffff02ff3effff04ff02ffff04ff0bff80808080ff808080808080ffff01ff0101ff8080ff018080ff0180ffff01ff02ffff03ffff09ff29ffff02ff2effff04ff02ffff04ff47ffff04ffff02ff3effff04ff02ffff04ff0bff80808080ff808080808080ffff01ff02ffff03ffff20ffff15ff67ff5b8080ffff01ff0101ff8080ff0180ff8080ff018080ff0180ffff01ff02ff16ffff04ff02ffff04ff0dffff04ff0bffff04ff17ff808080808080ffff01ff088080ff0180ffff01ff02ff16ffff04ff02ffff04ff0dffff04ff0bffff04ff17ff80808080808080ff018080ff8080ff0180ffff0bff12ffff0bff2cff1080ffff0bff12ffff0bff12ffff0bff2cff3c80ff0580ffff0bff12ffff02ff1affff04ff02ffff04ff07ffff04ffff0bff2cff2c80ff8080808080ffff0bff2cff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff3effff04ff02ffff04ff09ff80808080ffff02ff3effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const INTERNAL_CUSTODY_REKEY_AND_PAYMENT_HASH: [u8; 32] =
+    hex!("89cb62c3c6b2fe873f78567143520a0fd6e1fca0f0f24cdc16374f734be6d56a");
+
+/// ```text
+/// (mod
+///   (
+///     CURRIED_ARGS  ; this is an abstraction of a list of curried arguments
+///     PUZZLE_REVEAL  ; inside p2_merkle_tree this is the "parameters"
+///     (  ; inside p2_merkle_tree this is the "inner_solution"
+///       solution
+///       curried_args_to_coin  ; These are the args that are curried into the even coin that we see
+///     )
+///   )
+///
+///   (include condition_codes.clib)
+///   (include curry_and_treehash.clib)
+///   (include utility_macros.clib)
+///
+///   ; CURRIED_ARGS is a cons of these 2 things:
+///   ;
+///   ; - REKEY_MOD_HASH          ; The rekey module without its rekey specific curried arguments
+///   ; - ALLOWED_REKEY_TIMELOCK  ; The timelock that is allowed for these rekeys
+///
+///   (defun-inline REKEY_MOD_HASH (CURRIED_ARGS) (f CURRIED_ARGS))
+///   (defun-inline ALLOWED_REKEY_TIMELOCK (CURRIED_ARGS) (r CURRIED_ARGS))
+///
+///   (defun-inline opcode (condition) (f condition))
+///   (defun-inline puzhash (condition) (f (r condition)))
+///   (defun-inline amount (condition) (f (r (r condition))))
+///
+///   (defun check_zero_coin (conditions curried_args_to_coin CURRIED_ARGS)
+///     (if conditions
+///         (c (f conditions)
+///           (if (and  ; if this is an even CREATE_COIN
+///                 (= CREATE_COIN (opcode (f conditions)))
+///                 (not (logand (amount (f conditions)) 1))
+///               )
+///               (assert
+///                 ; it's a rekey coin
+///                 (not (amount (f conditions)))
+///                 (=
+///                   (puzhash (f conditions))
+///                   (puzzle_hash_of_curried_function (REKEY_MOD_HASH CURRIED_ARGS) (sha256tree curried_args_to_coin))
+///                 )
+///                 ; with the correct timelock
+///                 (not (> (ALLOWED_REKEY_TIMELOCK CURRIED_ARGS) (f (r (r curried_args_to_coin)))))
+///                 ; then
+///                 (check_zero_coin
+///                   (r conditions)
+///                   curried_args_to_coin
+///                   CURRIED_ARGS
+///                 )
+///               )
+///               (check_zero_coin
+///                 (r conditions)
+///                 curried_args_to_coin
+///                 CURRIED_ARGS
+///               )
+///           )
+///         )
+///         ()
+///     )
+///   )
+///
+///   (check_zero_coin (a PUZZLE_REVEAL solution) curried_args_to_coin CURRIED_ARGS ())
+/// )
+/// ```
+pub const INTERNAL_CUSTODY_ONLY_REKEY: [u8; 597] = hex!("ff02ffff01ff02ff16ffff04ff02ffff04ffff02ff0bff2780ffff04ff57ffff04ff05ffff01ff80808080808080ffff04ffff01ffffff0233ff04ff0101ffff02ff02ffff03ff05ffff01ff02ff1affff04ff02ffff04ff0dffff04ffff0bff12ffff0bff2cff1480ffff0bff12ffff0bff12ffff0bff2cff3c80ff0980ffff0bff12ff0bffff0bff2cff8080808080ff8080808080ffff010b80ff0180ffff02ffff03ff05ffff01ff04ff09ffff02ffff03ffff02ffff03ffff09ff18ff1180ffff01ff02ffff03ffff20ffff18ff59ffff01018080ffff01ff0101ff8080ff0180ff8080ff0180ffff01ff02ffff03ffff20ff5980ffff01ff02ffff03ffff09ff29ffff02ff2effff04ff02ffff04ff27ffff04ffff02ff3effff04ff02ffff04ff0bff80808080ff808080808080ffff01ff02ffff03ffff20ffff15ff37ff5b8080ffff01ff02ff16ffff04ff02ffff04ff0dffff04ff0bffff04ff17ff808080808080ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff088080ff0180ffff01ff02ff16ffff04ff02ffff04ff0dffff04ff0bffff04ff17ff80808080808080ff018080ff8080ff0180ffff0bff12ffff0bff2cff1080ffff0bff12ffff0bff12ffff0bff2cff3c80ff0580ffff0bff12ffff02ff1affff04ff02ffff04ff07ffff04ffff0bff2cff2c80ff8080808080ffff0bff2cff8080808080ff02ffff03ffff07ff0580ffff01ff0bffff0102ffff02ff3effff04ff02ffff04ff09ff80808080ffff02ff3effff04ff02ffff04ff0dff8080808080ffff01ff0bffff0101ff058080ff0180ff018080");
+pub const INTERNAL_CUSTODY_ONLY_REKEY_HASH: [u8; 32] =
+    hex!("a78393abb073577a1e60e4058e93b603a0bd06c398c87452bff070274d4ae159");
+
+/// ```text
 /// (mod (POOL_PUZZLE_HASH
 ///     P2_SINGLETON_PUZZLE_HASH
 ///     OWNER_PUBKEY
