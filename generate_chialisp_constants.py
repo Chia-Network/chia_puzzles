@@ -435,6 +435,52 @@ chialisp_dictionary = [
         "./puzzles/mips_puzzles/restriction_puzzles/enforce_dpuz_wrappers.clsp.hex",
         "1f94aa2381c1c02fec90687c0b045ef3cad4b458f8eac5bd90695b4d89624f09",
     ),
+    # Internal Custody Puzzles
+    (
+        "INTERNAL_CUSTODY_PREFARM_INNER",
+        "./puzzles/internal_custody_puzzles/prefarm_inner.clsp.hex",
+        "66f0fe81cbaf300b32f4b3ca19085ecd5b6378f0449e4c589f8590da0a6b9773",
+    ),
+    (
+        "INTERNAL_CUSTODY_P2_MERKLE_TREE",
+        "./puzzles/internal_custody_puzzles/p2_merkle_tree.clsp.hex",
+        "fa279361042957f4dd2c5dcb9ac082bf4c11f2b02d57fcb547347a4934344bf7",
+    ),
+    (
+        "INTERNAL_CUSTODY_ACH_CLAWBACK",
+        "./puzzles/internal_custody_puzzles/ach_clawback.clsp.hex",
+        "38b68260d64d38397da1cfa1116c5a968432410a9a4568bf7e5f900a0b925bea",
+    ),
+    (
+        "INTERNAL_CUSTODY_ACH_COMPLETION",
+        "./puzzles/internal_custody_puzzles/ach_completion.clsp.hex",
+        "101df03a30c1098e2e9dbc3fff3cd4b75b064457a19ac05fc747d3af69f12564",
+    ),
+    (
+        "INTERNAL_CUSTODY_REKEY_CLAWBACK",
+        "./puzzles/internal_custody_puzzles/rekey_clawback.clsp.hex",
+        "7e81af82627c0907a322df54bcf56732275b58177eb4b29a3eb18ea1fe0b4ff8",
+    ),
+    (
+        "INTERNAL_CUSTODY_REKEY_COMPLETION",
+        "./puzzles/internal_custody_puzzles/rekey_completion.clsp.hex",
+        "ef888df7b2edf0fcc20b57fc9dea3a53b761518170b7e3cc97718acbe1e17118",
+    ),
+    (
+        "INTERNAL_CUSTODY_P2_NEW_LOCK_LEVEL",
+        "./puzzles/internal_custody_puzzles/p2_new_lock_level.clsp.hex",
+        "6f2fb262b1710a17550a6567ca072e5e982ae5bb029f899cfb336bd320a9de01",
+    ),
+    (
+        "INTERNAL_CUSTODY_REKEY_AND_PAYMENT",
+        "./puzzles/internal_custody_puzzles/rekey_and_payment.clsp.hex",
+        "89cb62c3c6b2fe873f78567143520a0fd6e1fca0f0f24cdc16374f734be6d56a",
+    ),
+    (
+        "INTERNAL_CUSTODY_ONLY_REKEY",
+        "./puzzles/internal_custody_puzzles/only_rekey.clsp.hex",
+        "a78393abb073577a1e60e4058e93b603a0bd06c398c87452bff070274d4ae159",
+    ),
     # Pool Puzzles
     (
         "POOL_MEMBER_INNERPUZ",
@@ -523,9 +569,11 @@ with open(rust_dest_path, "w") as rust_file, open(python_dest_path, "w") as pyth
             compile_clvm(
                 input_path=source_code_path,
                 output_path=temp_file,
+                # The puzzle's own directory is searched first so that a puzzle
+                # family can vendor its own versions of shared include files.
                 search_paths=[
-                    os.path.join(here, "puzzles"),
                     source_code_dir,
+                    os.path.join(here, "puzzles"),
                 ],
             )
             with open(temp_file, "r") as hex_file:
